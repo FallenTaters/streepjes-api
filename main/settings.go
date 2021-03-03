@@ -1,16 +1,39 @@
 package main
 
-import "os"
+import (
+	"os"
+	"strings"
+)
 
-var Settings = struct {
-	Port string
+var settings = struct {
+	Port          string
+	DisableSecure bool
 }{
-	Port: "8080",
+	Port:          "8081",
+	DisableSecure: false,
 }
 
 func readSettings() {
-	port := os.Getenv(`PORT`)
-	if port != `` {
-		Settings.Port = port
+	settings.Port = readString(`PORT`, settings.Port)
+	settings.DisableSecure = readBool(`DISABLE_SECURE`, settings.DisableSecure)
+}
+
+func readString(name, defaultValue string) string {
+	v := os.Getenv(name)
+	if v == `` {
+		return defaultValue
 	}
+	return v
+}
+
+func readBool(name string, defaultValue bool) bool {
+	v := os.Getenv(name)
+	v = strings.ToLower(v)
+	switch v {
+	case `true`:
+		return true
+	case `false`:
+		return false
+	}
+	return defaultValue
 }

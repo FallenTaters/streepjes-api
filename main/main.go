@@ -8,10 +8,12 @@ import (
 
 	"git.fuyu.moe/Fuyu/router"
 	"github.com/PotatoesFall/streepjes/domain/user"
+	"github.com/PotatoesFall/streepjes/shared"
 )
 
 func main() {
 	readSettings()
+	initStuff()
 
 	r := router.New()
 
@@ -23,7 +25,11 @@ func main() {
 	a := r.Group(`/`, authMiddleware)
 	a.GET(`/order`, getOrder)
 
-	panic(r.Start(`:` + Settings.Port))
+	panic(r.Start(`:` + settings.Port))
+}
+
+func initStuff() {
+	shared.Init(settings.DisableSecure)
 }
 
 func errorHandler(c *router.Context, v interface{}) {
@@ -46,11 +52,12 @@ func reader(c *router.Context, dst interface{}) (bool, error) {
 }
 
 func login(c *router.Context, credentials user.Credentials) error {
-	role, ok := user.LogIn(credentials)
-	if !ok {
-		return c.NoContent(http.StatusUnauthorized)
+	role := user.LogIn(c.Response, credentials)
+	if role == user.RoleNotAuthorized {
+		return c.String(http.StatusBadRequest, `invalid username or password`)
 	}
 
+	shared.SetCookie(c.Response, user.AuthCookie, `token`, 5*60)
 	return c.JSON(http.StatusOK, role)
 }
 

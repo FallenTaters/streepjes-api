@@ -1,17 +1,22 @@
 package user
 
+import (
+	"net/http"
+)
+
+const AuthCookie = `auth_token`
+
 type Credentials struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
 }
 
-func LogIn(c Credentials) (Role, bool) {
-	testCredentials := Credentials{
-		Username: "username",
-		Password: "password",
+func LogIn(w http.ResponseWriter, c Credentials) Role {
+	switch c {
+	case Credentials{Username: "admin", Password: "password"}:
+		return RoleAdmin
+	case Credentials{Username: "bartender", Password: "password"}:
+		return RoleBartender
 	}
-	if c == testCredentials {
-		return RoleAdmin, true
-	}
-	return RoleNone, false
+	return RoleNotAuthorized
 }

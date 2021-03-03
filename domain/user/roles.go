@@ -5,7 +5,7 @@ type Role struct {
 }
 
 var (
-	RoleNone      = Role{``}
-	RoleBartender = Role{`bartender`}
-	RoleAdmin     = Role{`admin`}
+	RoleNotAuthorized = Role{``}
+	RoleBartender     = Role{`bartender`}
+	RoleAdmin         = Role{`admin`}
 )
