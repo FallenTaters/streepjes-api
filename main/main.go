@@ -10,11 +10,9 @@ import (
 	"github.com/PotatoesFall/streepjes/domain/user"
 )
 
-const (
-	port = `8080`
-)
-
 func main() {
+	readSettings()
+
 	r := router.New()
 
 	r.ErrorHandler = errorHandler
@@ -25,7 +23,7 @@ func main() {
 	a := r.Group(`/`, authMiddleware)
 	a.GET(`/order`, getOrder)
 
-	panic(r.Start(`:` + port))
+	panic(r.Start(`:` + Settings.Port))
 }
 
 func errorHandler(c *router.Context, v interface{}) {
