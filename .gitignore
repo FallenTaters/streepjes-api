@@ -1,0 +1,8 @@
+# IDE
+/.vscode
+
+# go
+go.sum
+
+# environment, settings and passwords
+*.env
