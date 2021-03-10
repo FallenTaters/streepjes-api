@@ -1,18 +1,25 @@
 package main
 
 import (
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 
+	_ "github.com/mattn/go-sqlite3"
+
 	"git.fuyu.moe/Fuyu/router"
-	"github.com/PotatoesFall/streepjes/domain/user"
 	"github.com/PotatoesFall/streepjes/shared"
+	"github.com/PotatoesFall/streepjes/shared/migrate"
 )
+
+var db *sql.DB
 
 func main() {
 	readSettings()
+	getDB()
+	defer db.Close()
 	initStuff()
 
 	r := router.New()
@@ -20,12 +27,27 @@ func main() {
 	r.ErrorHandler = errorHandler
 	r.Reader = reader
 
-	r.POST(`/login`, login)
+	r.POST(`/login`, postLogin)
 
 	a := r.Group(`/`, authMiddleware)
-	a.GET(`/order`, getOrder)
+	a.GET(`/catalog`, getCatalog)
+	a.GET(`/members`, getMembers)
+	a.POST(`/order`, postOrder)
 
 	panic(r.Start(`:` + settings.Port))
+}
+
+func getDB() {
+	database, err := sql.Open("sqlite3", "./streepjes.db")
+	if err != nil {
+		panic(err)
+	}
+	db = database
+
+	err = migrate.Migrate(db)
+	if err != nil {
+		panic(err)
+	}
 }
 
 func initStuff() {
@@ -49,18 +71,4 @@ func reader(c *router.Context, dst interface{}) (bool, error) {
 	}
 
 	return true, nil
-}
-
-func login(c *router.Context, credentials user.Credentials) error {
-	role := user.LogIn(c.Response, credentials)
-	if role == user.RoleNotAuthorized {
-		return c.String(http.StatusBadRequest, `invalid username or password`)
-	}
-
-	shared.SetCookie(c.Response, user.AuthCookie, `token`, 5*60)
-	return c.JSON(http.StatusOK, role)
-}
-
-func getOrder(c *router.Context) error {
-	return c.NoContent(http.StatusNotImplemented)
 }

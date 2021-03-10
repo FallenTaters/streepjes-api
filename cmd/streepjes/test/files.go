@@ -1,0 +1,3 @@
+package test
+
+//go:generate b-data -pkg $GOPACKAGE -prefix files files/...
