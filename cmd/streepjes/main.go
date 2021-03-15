@@ -10,6 +10,7 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 
 	"git.fuyu.moe/Fuyu/router"
+	"github.com/PotatoesFall/streepjes/domain/catalog"
 	"github.com/PotatoesFall/streepjes/shared"
 	"github.com/PotatoesFall/streepjes/shared/migrate"
 )
@@ -24,6 +25,7 @@ func main() {
 
 	r := router.New()
 
+	r.Use(corsMiddleware)
 	r.ErrorHandler = errorHandler
 	r.Reader = reader
 
@@ -52,10 +54,12 @@ func getDB() {
 
 func initStuff() {
 	shared.Init(settings.DisableSecure)
+	catalog.Init(db)
 }
 
 func errorHandler(c *router.Context, v interface{}) {
 	fmt.Printf("panic: %#v\n", v)
+	_ = c.NoContent(http.StatusInternalServerError)
 }
 
 func reader(c *router.Context, dst interface{}) (bool, error) {

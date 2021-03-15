@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"git.fuyu.moe/Fuyu/router"
+	"github.com/PotatoesFall/streepjes/domain/catalog"
 	"github.com/PotatoesFall/streepjes/domain/user"
 	"github.com/PotatoesFall/streepjes/shared"
 )
@@ -19,7 +20,8 @@ func postLogin(c *router.Context, credentials user.Credentials) error {
 }
 
 func getCatalog(c *router.Context) error {
-	return c.NoContent(http.StatusNotImplemented)
+	cat := catalog.Get()
+	return c.JSON(http.StatusOK, cat)
 }
 
 func getMembers(c *router.Context) error {
