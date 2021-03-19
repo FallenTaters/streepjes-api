@@ -11,6 +11,6 @@ func TestSomething(t *testing.T) {
 	getDB()
 	defer db.Close()
 
-	_, err := db.Exec(string(test.MustGetFile(`testdata.sql`)))
+	_, err := db.Exec(string(test.MustAsset(`files/testdata.sql`)))
 	assert.NoError(t, err)
 }

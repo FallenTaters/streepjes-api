@@ -12,7 +12,7 @@ import (
 func postLogin(c *router.Context, credentials user.Credentials) error {
 	role := user.LogIn(c.Response, credentials)
 	if role == user.RoleNotAuthorized {
-		return c.String(http.StatusBadRequest, `invalid username or password`)
+		return c.String(http.StatusUnauthorized, `invalid username or password`)
 	}
 
 	shared.SetCookie(c.Response, authCookieName, `token`, 5*60)

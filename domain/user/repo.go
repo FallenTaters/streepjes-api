@@ -9,3 +9,8 @@ func getUserByUsername(username string) (User, error) {
 	var user User
 	return user, row.Scan(&user.ID, &user.Name, &user.Username, &user.Password, &user.Role, &user.AuthToken, &user.AuthDatetime)
 }
+
+func insert(name, username string, password []byte, role Role) error {
+	_, err := db.Exec(`INSERT INTO user(name, username, password, role) VALUES($1, $2, $3, $4)`, name, username, password, role)
+	return err
+}

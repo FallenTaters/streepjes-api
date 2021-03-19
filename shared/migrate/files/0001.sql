@@ -4,8 +4,8 @@ CREATE TABLE user(
     username TEXT NOT NULL,
     password BLOB NOT NULL,
     role INTEGER NOT NULl,
-    auth_token TEXT NULL,
-    auth_datetime DATETIME NULL
+    auth_token TEXT NOT NULL DEFAULT '',
+    auth_datetime DATETIME NOT NULL DEFAULT '2000-01-01'
 );
 CREATE UNIQUE INDEX idx_user_username ON user(username);
 

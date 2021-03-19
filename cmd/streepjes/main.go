@@ -11,6 +11,7 @@ import (
 
 	"git.fuyu.moe/Fuyu/router"
 	"github.com/PotatoesFall/streepjes/domain/catalog"
+	"github.com/PotatoesFall/streepjes/domain/user"
 	"github.com/PotatoesFall/streepjes/shared"
 	"github.com/PotatoesFall/streepjes/shared/migrate"
 )
@@ -55,6 +56,7 @@ func getDB() {
 func initStuff() {
 	shared.Init(settings.DisableSecure)
 	catalog.Init(db)
+	user.Init(db)
 }
 
 func errorHandler(c *router.Context, v interface{}) {

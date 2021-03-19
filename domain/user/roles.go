@@ -1,11 +1,11 @@
 package user
 
-type Role struct {
-	Role string `json:"role"`
-}
+//go:generate enumer -type Role -linecomment -sql -json
 
-var (
-	RoleNotAuthorized = Role{``}
-	RoleBartender     = Role{`bartender`}
-	RoleAdmin         = Role{`admin`}
+type Role int
+
+const (
+	RoleNotAuthorized Role = iota // not_authorized
+	RoleBartender                 // bartender
+	RoleAdmin                     // admin
 )

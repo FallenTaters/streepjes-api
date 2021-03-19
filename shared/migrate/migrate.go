@@ -5,21 +5,16 @@ import (
 	"fmt"
 )
 
-//go:generate b-data -pkg $GOPACKAGE -prefix files files/...
-
 // Migrate ...
 func Migrate(db *sql.DB) error {
 	migrated, _ := getMigrations(db)
 
-	for _, file := range GetFileNames() {
+	for _, file := range AssetNames() {
 		if isMigrated(migrated, file) {
 			continue
 		}
-		q, err := GetFile(file)
-		if err != nil {
-			panic(err)
-		}
-		_, err = db.Exec(string(q))
+		q := MustAsset(file)
+		_, err := db.Exec(string(q))
 		if err != nil {
 			panic(err)
 		}
