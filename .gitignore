@@ -5,7 +5,6 @@ __debug_bin
 # go
 go.sum
 *_enumer.go
-bindata.go
 
 # environment, settings and passwords
 *.env
