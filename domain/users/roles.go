@@ -1,4 +1,4 @@
-package user
+package users
 
 //go:generate enumer -type Role -linecomment -sql -json
 

@@ -2,8 +2,9 @@ package main
 
 import (
 	"database/sql"
+	"fmt"
 
-	"github.com/PotatoesFall/streepjes/domain/user"
+	"github.com/PotatoesFall/streepjes/domain/users"
 	"github.com/PotatoesFall/streepjes/shared/migrate"
 
 	_ "github.com/mattn/go-sqlite3"
@@ -13,8 +14,11 @@ var db *sql.DB
 
 func main() {
 	getDB()
-	user.Init(db)
-	panic(user.Insert(`admin`, `admin`, `admin`, user.RoleAdmin))
+	users.Init(db)
+	err := users.Insert(`admin`, `admin`, `admin`, users.RoleAdmin)
+	if err != nil {
+		fmt.Println(err.Error())
+	}
 }
 
 func getDB() {

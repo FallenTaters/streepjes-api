@@ -11,7 +11,7 @@ import (
 
 	"git.fuyu.moe/Fuyu/router"
 	"github.com/PotatoesFall/streepjes/domain/catalog"
-	"github.com/PotatoesFall/streepjes/domain/user"
+	"github.com/PotatoesFall/streepjes/domain/users"
 	"github.com/PotatoesFall/streepjes/shared"
 	"github.com/PotatoesFall/streepjes/shared/migrate"
 )
@@ -33,6 +33,7 @@ func main() {
 	r.POST(`/login`, postLogin)
 
 	a := r.Group(`/`, authMiddleware)
+	a.POST(`/active`, postActive)
 	a.GET(`/catalog`, getCatalog)
 	a.GET(`/members`, getMembers)
 	a.POST(`/order`, postOrder)
@@ -56,7 +57,7 @@ func getDB() {
 func initStuff() {
 	shared.Init(settings.DisableSecure)
 	catalog.Init(db)
-	user.Init(db)
+	users.Init(db)
 }
 
 func errorHandler(c *router.Context, v interface{}) {

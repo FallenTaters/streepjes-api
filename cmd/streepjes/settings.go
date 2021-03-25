@@ -10,7 +10,7 @@ var settings = struct {
 	DisableSecure bool
 }{
 	Port:          "8081",
-	DisableSecure: false,
+	DisableSecure: true,
 }
 
 func readSettings() {

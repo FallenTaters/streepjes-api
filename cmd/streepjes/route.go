@@ -1,22 +1,32 @@
 package main
 
 import (
+	"encoding/json"
 	"net/http"
 
 	"git.fuyu.moe/Fuyu/router"
 	"github.com/PotatoesFall/streepjes/domain/catalog"
-	"github.com/PotatoesFall/streepjes/domain/user"
+	"github.com/PotatoesFall/streepjes/domain/users"
 	"github.com/PotatoesFall/streepjes/shared"
 )
 
-func postLogin(c *router.Context, credentials user.Credentials) error {
-	role := user.LogIn(c.Response, credentials)
-	if role == user.RoleNotAuthorized {
+func postActive(c *router.Context) error {
+	return c.NoContent(http.StatusOK)
+}
+
+func postLogin(c *router.Context, credentials users.Credentials) error {
+	user := users.LogIn(c.Response, credentials)
+	if user.Role == users.RoleNotAuthorized {
 		return c.String(http.StatusUnauthorized, `invalid username or password`)
 	}
 
-	shared.SetCookie(c.Response, authCookieName, `token`, 5*60)
-	return c.JSON(http.StatusOK, role)
+	cookieValue, err := json.Marshal(authCookie{Username: user.Username, AuthToken: user.AuthToken})
+	if err != nil {
+		panic(err)
+	}
+
+	shared.SetCookie(c.Response, authCookieName, cookieValue, authCookieDuration)
+	return c.JSON(http.StatusOK, user.Role)
 }
 
 func getCatalog(c *router.Context) error {
