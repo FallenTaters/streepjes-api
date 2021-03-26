@@ -14,7 +14,7 @@ CREATE TABLE member(
     id INTEGER PRIMARY KEY,
     club INTEGER NOT NULL,
     name TEXT NOT NULL,
-    balance INTEGER NOT NULL DEFAULT 0
+    debt INTEGER NOT NULL DEFAULT 0
 );
 CREATE UNIQUE INDEX idx_member_name_club ON member(name, club);
 

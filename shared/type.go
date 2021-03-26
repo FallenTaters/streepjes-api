@@ -8,4 +8,4 @@ const (
 	ClubGladiators             // Gladiators
 )
 
-//go:generate enumer -json -linecomment -type Club
+//go:generate enumer -linecomment -type Club

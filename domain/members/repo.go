@@ -5,7 +5,7 @@ import "database/sql"
 var db *sql.DB
 
 func getAll() []Member {
-	rows, err := db.Query(`SELECT id, name, club, balance FROM members;`)
+	rows, err := db.Query(`SELECT id, name, club, debt FROM member;`)
 	if err != nil {
 		panic(err)
 	}
@@ -20,10 +20,9 @@ func getAll() []Member {
 
 func scanMember(rows *sql.Rows) Member {
 	var member Member
-	err := rows.Scan(&member.ID, &member.Name, &member.Club, &member.Balance)
+	err := rows.Scan(&member.ID, &member.Name, &member.Club, &member.Debt)
 	if err != nil {
 		panic(err)
 	}
-	member.Debt = -member.Balance
 	return member
 }

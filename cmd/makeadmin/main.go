@@ -2,7 +2,6 @@ package main
 
 import (
 	"database/sql"
-	"fmt"
 
 	"github.com/PotatoesFall/streepjes/domain/users"
 	"github.com/PotatoesFall/streepjes/shared/migrate"
@@ -14,10 +13,17 @@ var db *sql.DB
 
 func main() {
 	getDB()
+	defer db.Close()
 	users.Init(db)
+
 	err := users.Insert(`admin`, `admin`, `admin`, users.RoleAdmin)
 	if err != nil {
-		fmt.Println(err.Error())
+		panic(err)
+	}
+
+	err = users.Insert(`bartender`, `bartender`, `bartender`, users.RoleBartender)
+	if err != nil {
+		panic(err)
 	}
 }
 
