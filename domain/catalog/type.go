@@ -12,8 +12,8 @@ type Category struct {
 
 type Product struct {
 	ID              int    `json:"id"`
-	CategoryID      int    `json:"category_id"`
+	CategoryID      int    `json:"category"`
 	Name            string `json:"name"`
-	PriceParabool   int    `json:"price_parabool"`
-	PriceGladiators int    `json:"price_gladiators"`
+	PriceParabool   int    `json:"priceParabool"`
+	PriceGladiators int    `json:"priceGladiators"`
 }
