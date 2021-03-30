@@ -37,9 +37,18 @@ func authMiddleware(next router.Handle) router.Handle {
 		// refresh cookie duration
 		shared.SetCookie(c.Response, authCookieName, cookieValue, authCookieDuration)
 		users.RefreshToken(cookie.Username)
+		c.Set(`username`, cookie.Username)
 
 		return next(c)
 	}
+}
+
+func getUsernameFromContext(c *router.Context) string {
+	username, ok := c.Get(`username`).(string)
+	if !ok {
+		return ``
+	}
+	return username
 }
 
 func corsMiddleware(next router.Handle) router.Handle {

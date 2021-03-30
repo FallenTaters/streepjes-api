@@ -18,6 +18,13 @@ func insert(name, username string, password []byte, role Role) error {
 	return err
 }
 
+func removeToken(username string) {
+	_, err := db.Exec(`UPDATE user SET auth_datetime = $time WHERE username = $username;`, time.Now().Add(-loginTime), username)
+	if err != nil {
+		panic(err)
+	}
+}
+
 func setToken(user User) error {
 	res, err := db.Exec(`UPDATE user SET auth_token = $token, auth_datetime = $time WHERE username = $username;`, user.AuthToken, time.Now(), user.Username)
 	if err != nil {

@@ -32,6 +32,7 @@ func postLogin(c *router.Context, credentials users.Credentials) error {
 
 func postLogout(c *router.Context) error {
 	shared.UnsetCookie(c.Response, authCookieName)
+	users.LogOut(getUsernameFromContext(c))
 	return c.NoContent(http.StatusOK)
 }
 

@@ -38,6 +38,10 @@ func LogIn(w http.ResponseWriter, c Credentials) User {
 	return user
 }
 
+func LogOut(username string) {
+	removeToken(username)
+}
+
 func RefreshToken(username string) {
 	refreshToken(username)
 }
