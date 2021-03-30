@@ -32,6 +32,7 @@ func main() {
 	r.Reader = reader
 
 	r.POST(`/login`, postLogin)
+	r.POST(`/logout`, postLogout)
 
 	a := r.Group(`/`, authMiddleware)
 	a.PUT(`/active`, putActive)

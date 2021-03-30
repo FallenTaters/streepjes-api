@@ -30,6 +30,11 @@ func postLogin(c *router.Context, credentials users.Credentials) error {
 	return c.JSON(http.StatusOK, user.Role)
 }
 
+func postLogout(c *router.Context) error {
+	shared.UnsetCookie(c.Response, authCookieName)
+	return c.NoContent(http.StatusOK)
+}
+
 func getCatalog(c *router.Context) error {
 	cat := catalog.Get()
 	return c.JSON(http.StatusOK, cat)
