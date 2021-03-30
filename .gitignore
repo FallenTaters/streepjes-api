@@ -11,4 +11,7 @@ bindata.go
 *.env
 
 # DB
-*.db
+streepjes.db
+
+# executables
+/bin
