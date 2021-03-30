@@ -7,6 +7,7 @@ import (
 	"git.fuyu.moe/Fuyu/router"
 	"github.com/PotatoesFall/streepjes/domain/catalog"
 	"github.com/PotatoesFall/streepjes/domain/members"
+	"github.com/PotatoesFall/streepjes/domain/orders"
 	"github.com/PotatoesFall/streepjes/domain/users"
 	"github.com/PotatoesFall/streepjes/shared"
 )
@@ -46,6 +47,6 @@ func getMembers(c *router.Context) error {
 	return c.JSON(http.StatusOK, members)
 }
 
-func postOrder(c *router.Context) error {
+func postOrder(c *router.Context, order orders.Order) error {
 	return c.NoContent(http.StatusNotImplemented)
 }

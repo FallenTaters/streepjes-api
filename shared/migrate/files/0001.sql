@@ -41,12 +41,12 @@ CREATE INDEX idx_product_category ON product(category_id);
 CREATE TABLE "order" (
     id INTEGER PRIMARY KEY,
     bartender_id INTEGER NOT NULL,
-    member_id INTEGER NOT NULL,
+    member_id INTEGER NULL,
     contents BLOB NOT NULL,
     price INTEGER NOT NULL,
     order_datetime DATETIME NOT NULL,
     status INTEGER NOT NULL,
-    paid_datetime DATETIME NULL,
+    status_datetime DATETIME NULL,
 
     FOREIGN KEY(bartender_id) REFERENCES user(id),
     FOREIGN KEY(member_id) REFERENCES member(id)
