@@ -35,7 +35,7 @@ func main() {
 	r.POST(`/logout`, postLogout)
 
 	a := r.Group(`/`, authMiddleware)
-	a.PUT(`/active`, putActive)
+	a.POST(`/active`, postActive)
 	a.GET(`/catalog`, getCatalog)
 	a.GET(`/members`, getMembers)
 	a.POST(`/order`, postOrder)

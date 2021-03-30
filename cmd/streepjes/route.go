@@ -11,7 +11,7 @@ import (
 	"github.com/PotatoesFall/streepjes/shared"
 )
 
-func putActive(c *router.Context) error {
+func postActive(c *router.Context) error {
 	return c.NoContent(http.StatusOK)
 }
 
