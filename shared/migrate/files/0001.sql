@@ -1,5 +1,6 @@
 CREATE TABLE user(
     id INTEGER PRIMARY KEY,
+    club INTEGER NOT NULL,
     name TEXT NOT NULL,
     username TEXT NOT NULL,
     password BLOB NOT NULL,

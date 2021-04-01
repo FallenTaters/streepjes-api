@@ -36,11 +36,15 @@ func main() {
 	r.POST(`/login`, postLogin)
 	r.POST(`/logout`, postLogout)
 
-	a := r.Group(`/`, authMiddleware)
-	a.POST(`/active`, postActive)
-	a.GET(`/catalog`, getCatalog)
-	a.GET(`/members`, getMembers)
-	a.POST(`/order`, postOrder)
+	au := r.Group(`/`, authMiddleware)
+	au.POST(`/active`, postActive)
+	au.GET(`/catalog`, getCatalog)
+	au.GET(`/members`, getMembers)
+	au.POST(`/order`, postOrder)
+	au.GET(`/orders`, getOrders)
+
+	ad := au.Group(`/`, roleMiddleware(users.RoleAdmin))
+	ad.GET(`/users`, getUsers)
 
 	panic(r.Start(`:` + settings.Port))
 }

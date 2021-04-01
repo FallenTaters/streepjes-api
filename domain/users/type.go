@@ -1,6 +1,10 @@
 package users
 
-import "time"
+import (
+	"time"
+
+	"github.com/PotatoesFall/streepjes/shared"
+)
 
 type Credentials struct {
 	Username string `json:"username"`
@@ -8,11 +12,12 @@ type Credentials struct {
 }
 
 type User struct {
-	ID           int       `json:"ID"`
-	Name         string    `json:"name"`
-	Username     string    `json:"username"`
-	Password     []byte    `json:"-"`
-	Role         Role      `json:"role"`
-	AuthToken    string    `json:"auth_token"`
-	AuthDatetime time.Time `json:"auth_datetime"`
+	ID           int         `json:"ID"`
+	Club         shared.Club `json:"club"`
+	Name         string      `json:"name"`
+	Username     string      `json:"username"`
+	Password     []byte      `json:"-"`
+	Role         Role        `json:"role"`
+	AuthToken    string      `json:"-"`
+	AuthDatetime time.Time   `json:"-"`
 }

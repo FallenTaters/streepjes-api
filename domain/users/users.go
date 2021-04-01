@@ -59,13 +59,14 @@ func ValidateToken(username, token string) (User, bool) {
 	return user, true
 }
 
-func Insert(name, username, password string, role Role) error {
-	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+func Insert(user User) error {
+	hash, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return err
 	}
+	user.Password = hash
 
-	return insert(name, username, hash, role)
+	return insert(user)
 }
 
 func MustGetByUsername(username string) User {
@@ -74,4 +75,8 @@ func MustGetByUsername(username string) User {
 		panic(err)
 	}
 	return user
+}
+
+func GetAll() []User {
+	return getAll()
 }

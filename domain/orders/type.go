@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/PotatoesFall/streepjes/shared"
+	"github.com/PotatoesFall/streepjes/shared/null"
 )
 
 type OrderStatus int
@@ -27,4 +28,9 @@ type Order struct {
 	OrderTime   time.Time   `json:"orderDate"`
 	Status      OrderStatus `json:"status"`
 	StatusTime  time.Time   `json:"statusDate"`
+}
+
+type Filter struct {
+	Club        null.Int `json:"club"`
+	BartenderID null.Int `json:"bartenderId"`
 }

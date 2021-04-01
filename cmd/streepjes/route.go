@@ -11,6 +11,7 @@ import (
 	"github.com/PotatoesFall/streepjes/domain/orders"
 	"github.com/PotatoesFall/streepjes/domain/users"
 	"github.com/PotatoesFall/streepjes/shared"
+	"github.com/PotatoesFall/streepjes/shared/null"
 )
 
 func postActive(c *router.Context) error {
@@ -34,7 +35,7 @@ func postLogin(c *router.Context, credentials users.Credentials) error {
 
 func postLogout(c *router.Context) error {
 	shared.UnsetCookie(c.Response, authCookieName)
-	users.LogOut(getUsernameFromContext(c))
+	users.LogOut(getUserFromContext(c).ID)
 	return c.NoContent(http.StatusOK)
 }
 
@@ -49,7 +50,7 @@ func getMembers(c *router.Context) error {
 }
 
 func postOrder(c *router.Context, order orders.Order) error {
-	order.BartenderID = users.MustGetByUsername(getUsernameFromContext(c)).ID
+	order.BartenderID = getUserFromContext(c).ID
 	order.OrderTime = time.Now()
 	if order.Status != orders.OrderStatusOpen && order.Status != orders.OrderStatusPaid {
 		return c.String(http.StatusBadRequest, `Status must be "Open" or "Paid".`)
@@ -62,4 +63,26 @@ func postOrder(c *router.Context, order orders.Order) error {
 	}
 
 	return c.NoContent(http.StatusOK)
+}
+
+func getUsers(c *router.Context) error {
+	users := users.GetAll()
+	return c.JSON(http.StatusOK, users)
+}
+
+func getOrders(c *router.Context) error {
+	user := getUserFromContext(c)
+	filter := orders.Filter{}
+
+	switch user.Role {
+	case users.RoleAdmin:
+		filter.Club = null.NewInt(user.Club.Int())
+	case users.RoleBartender:
+		filter.BartenderID = null.NewInt(user.ID)
+	default:
+		return c.StatusText(http.StatusUnauthorized)
+	}
+
+	orders := orders.Get(filter)
+	return c.JSON(http.StatusOK, orders)
 }

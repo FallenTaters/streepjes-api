@@ -19,6 +19,19 @@ type authCookie struct {
 	AuthToken string `json:"auth_token"`
 }
 
+func roleMiddleware(role users.Role) router.Middleware {
+	return func(next router.Handle) router.Handle {
+		return func(c *router.Context) error {
+			user := getUserFromContext(c)
+			if user.Role != role {
+				return c.String(http.StatusUnauthorized, `admin role required`)
+			}
+
+			return next(c)
+		}
+	}
+}
+
 func authMiddleware(next router.Handle) router.Handle {
 	return func(c *router.Context) error {
 		cookieValue, ok := shared.GetCookie(c.Request, authCookieName)
@@ -28,27 +41,36 @@ func authMiddleware(next router.Handle) router.Handle {
 
 		var cookie authCookie
 		err := json.Unmarshal([]byte(cookieValue), &cookie)
-
-		if err != nil || !users.ValidateToken(cookie.Username, cookie.AuthToken) {
-			shared.UnsetCookie(c.Response, authCookieName)
-			return c.StatusText(http.StatusUnauthorized)
+		if err != nil {
+			return authFail(c)
 		}
+
+		user, ok := users.ValidateToken(cookie.Username, cookie.AuthToken)
+		if !ok {
+			return authFail(c)
+		}
+
+		c.Set(`user`, user)
 
 		// refresh cookie duration
 		shared.SetCookie(c.Response, authCookieName, cookieValue, authCookieDuration)
 		users.RefreshToken(cookie.Username)
-		c.Set(`username`, cookie.Username)
 
 		return next(c)
 	}
 }
 
-func getUsernameFromContext(c *router.Context) string {
-	username, ok := c.Get(`username`).(string)
+func authFail(c *router.Context) error {
+	shared.UnsetCookie(c.Response, authCookieName)
+	return c.StatusText(http.StatusUnauthorized)
+}
+
+func getUserFromContext(c *router.Context) users.User {
+	user, ok := c.Get(`user`).(users.User)
 	if !ok {
-		return ``
+		panic(`user not found on context`)
 	}
-	return username
+	return user
 }
 
 func corsMiddleware(next router.Handle) router.Handle {

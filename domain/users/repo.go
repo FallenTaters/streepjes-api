@@ -7,19 +7,20 @@ import (
 
 var db *sql.DB
 
+var selectBase = `SELECT id, club, name, username, password, role, auth_token, auth_datetime FROM user `
+
 func getUserByUsername(username string) (User, error) {
-	row := db.QueryRow(`SELECT id, name, username, password, role, auth_token, auth_datetime FROM user WHERE username = $username;`, username)
-	var user User
-	return user, row.Scan(&user.ID, &user.Name, &user.Username, &user.Password, &user.Role, &user.AuthToken, &user.AuthDatetime)
+	row := db.QueryRow(selectBase+`WHERE username = $username;`, username)
+	return scanUser(row)
 }
 
-func insert(name, username string, password []byte, role Role) error {
-	_, err := db.Exec(`INSERT INTO user(name, username, password, role) VALUES($1, $2, $3, $4)`, name, username, password, role)
+func insert(user User) error {
+	_, err := db.Exec(`INSERT INTO user(name, club, username, password, role) VALUES($1, $2, $3, $4, $5)`, user.Name, user.Club, user.Username, user.Password, user.Role)
 	return err
 }
 
-func removeToken(username string) {
-	_, err := db.Exec(`UPDATE user SET auth_datetime = $time WHERE username = $username;`, time.Now().Add(-loginTime), username)
+func removeToken(id int) {
+	_, err := db.Exec(`UPDATE user SET auth_datetime = $time WHERE id = $id;`, time.Now().Add(-loginTime), id)
 	if err != nil {
 		panic(err)
 	}
@@ -44,4 +45,36 @@ func refreshToken(username string) {
 	if err != nil {
 		panic(err)
 	}
+}
+
+func getAll() []User {
+	rows, err := db.Query(selectBase + `;`)
+	if err != nil {
+		panic(err)
+	}
+	defer rows.Close() //nolint: errcheck
+
+	users := []User{}
+	for rows.Next() {
+		users = append(users, mustScanUser(rows))
+	}
+
+	return users
+}
+
+func mustScanUser(rows Scanner) User {
+	u, err := scanUser(rows)
+	if err != nil {
+		panic(err)
+	}
+	return u
+}
+
+func scanUser(rows Scanner) (User, error) {
+	var u User
+	return u, rows.Scan(&u.ID, &u.Club, &u.Name, &u.Username, &u.Password, &u.Role, &u.AuthToken, &u.AuthDatetime)
+}
+
+type Scanner interface {
+	Scan(...interface{}) error
 }

@@ -4,6 +4,7 @@ import (
 	"database/sql"
 
 	"github.com/PotatoesFall/streepjes/domain/users"
+	"github.com/PotatoesFall/streepjes/shared"
 	"github.com/PotatoesFall/streepjes/shared/migrate"
 
 	_ "github.com/mattn/go-sqlite3"
@@ -16,15 +17,26 @@ func main() {
 	defer db.Close()
 	users.Init(db)
 
-	err := users.Insert(`admin`, `admin`, `admin`, users.RoleAdmin)
-	if err != nil {
-		panic(err)
-	}
-
-	err = users.Insert(`bartender`, `bartender`, `bartender`, users.RoleBartender)
-	if err != nil {
-		panic(err)
-	}
+	mustInsertUsers([]users.User{
+		{
+			Username: `adminG`,
+			Club:     shared.ClubGladiators,
+			Name:     `adminG`,
+			Password: []byte(`admin`),
+			Role:     users.RoleAdmin,
+		}, {
+			Username: `adminP`,
+			Club:     shared.ClubParabool,
+			Name:     `adminP`,
+			Password: []byte(`admin`),
+			Role:     users.RoleAdmin,
+		}, {
+			Username: `bar`,
+			Name:     `bar`,
+			Password: []byte(`bar`),
+			Role:     users.RoleBartender,
+		},
+	})
 }
 
 func getDB() {
@@ -37,5 +49,14 @@ func getDB() {
 	err = migrate.Migrate(db)
 	if err != nil {
 		panic(err)
+	}
+}
+
+func mustInsertUsers(u []users.User) {
+	for _, user := range u {
+		err := users.Insert(user)
+		if err != nil {
+			panic(err)
+		}
 	}
 }

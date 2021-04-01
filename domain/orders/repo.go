@@ -1,8 +1,14 @@
 package orders
 
-import "database/sql"
+import (
+	"database/sql"
+
+	"github.com/PotatoesFall/streepjes/shared/sql/wherebuilder"
+)
 
 var db *sql.DB
+
+var selectBase = `SELECT id, club, bartender_id, member_id, contents, price, order_datetime, status, status_datetime FROM "order"`
 
 var insertOrderQ = `INSERT INTO "order"(club, bartender_id, member_id, contents, price, order_datetime, status, status_datetime)
 VALUES($1, $2, $3, $4, $5, $6, $7, $8);`
@@ -19,4 +25,28 @@ func mustScanOrder(rows *sql.Rows) Order {
 		panic(err)
 	}
 	return o
+}
+
+func getOrders(filter Filter) []Order {
+	wb := wherebuilder.New(selectBase)
+
+	if filter.BartenderID.Valid {
+		wb.Where(`bartender_id = ` + filter.BartenderID.String())
+	}
+	if filter.Club.Valid {
+		wb.Where(`club = ` + filter.Club.String())
+	}
+
+	rows, err := db.Query(wb.Query())
+	if err != nil {
+		panic(err)
+	}
+	defer rows.Close() //nolint: errcheck
+
+	var orders []Order
+	for rows.Next() {
+		orders = append(orders, mustScanOrder(rows))
+	}
+
+	return orders
 }
