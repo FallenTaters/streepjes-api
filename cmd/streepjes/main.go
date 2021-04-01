@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"os"
 
 	_ "github.com/mattn/go-sqlite3"
 
@@ -64,7 +65,7 @@ func initStuff() {
 }
 
 func errorHandler(c *router.Context, v interface{}) {
-	fmt.Printf("panic: %#v\n", v)
+	fmt.Fprintf(os.Stderr, "panic: %#v\n", v)
 	_ = c.NoContent(http.StatusInternalServerError)
 }
 
