@@ -10,6 +10,12 @@ resetdb:
 	rm streepjes.db -f
 	cp streepjes.example.db streepjes.db
 
+newtestdb:
+	rm streepjes.db -f
+	go run ./cmd/maketestdb/
+	go run ./cmd/makeadmin/
+	cp streepjes.db streepjes.example.db
+
 admin:
 	go run ./cmd/makeadmin/
 
