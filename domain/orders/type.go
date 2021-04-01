@@ -9,7 +9,7 @@ type OrderStatus int
 
 const (
 	OrderStatusOpen      OrderStatus = iota // Open
-	OrderStatusPaid                         // Paid
+	OrderStatusFinished                     // Finished
 	OrderStatusCancelled                    // Cancelled
 )
 
