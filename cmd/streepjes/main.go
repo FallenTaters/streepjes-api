@@ -13,6 +13,7 @@ import (
 	"git.fuyu.moe/Fuyu/router"
 	"github.com/PotatoesFall/streepjes/domain/catalog"
 	"github.com/PotatoesFall/streepjes/domain/members"
+	"github.com/PotatoesFall/streepjes/domain/orders"
 	"github.com/PotatoesFall/streepjes/domain/users"
 	"github.com/PotatoesFall/streepjes/shared"
 	"github.com/PotatoesFall/streepjes/shared/migrate"
@@ -62,6 +63,7 @@ func initStuff() {
 	catalog.Init(db)
 	users.Init(db)
 	members.Init(db)
+	orders.Init(db)
 }
 
 func errorHandler(c *router.Context, v interface{}) {

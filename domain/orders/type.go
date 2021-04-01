@@ -1,27 +1,30 @@
 package orders
 
 import (
-	"database/sql"
 	"time"
+
+	"github.com/PotatoesFall/streepjes/shared"
 )
 
 type OrderStatus int
 
 const (
-	OrderStatusOpen      OrderStatus = iota // Open
-	OrderStatusFinished                     // Finished
-	OrderStatusCancelled                    // Cancelled
+	OrderStatusOpen      OrderStatus = iota + 1 // Open
+	OrderStatusBilled                           // Billed
+	OrderStatusPaid                             // Paid
+	OrderStatusCancelled                        // Cancelled
 )
 
-//go:generate enumer -linecomment -type OrderStatus
+//go:generate enumer -json -linecomment -type OrderStatus
 
 type Order struct {
-	ID          int           `json:"id"`
-	BartenderID int           `json:"bartenderId"`
-	MemberID    sql.NullInt32 `json:"memberId"`
-	Contents    []byte        `json:"contents"`
-	Price       int           `json:"price"`
-	OrderTime   time.Time     `json:"orderDate"`
-	Status      OrderStatus   `json:"status"`
-	StatusTime  sql.NullTime  `json:"statusDate"`
+	ID          int         `json:"id"`
+	Club        shared.Club `json:"club"`
+	BartenderID int         `json:"bartenderId"`
+	MemberID    int         `json:"memberId"`
+	Contents    string      `json:"contents"`
+	Price       int         `json:"price"`
+	OrderTime   time.Time   `json:"orderDate"`
+	Status      OrderStatus `json:"status"`
+	StatusTime  time.Time   `json:"statusDate"`
 }

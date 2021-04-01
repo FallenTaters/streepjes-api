@@ -9,6 +9,7 @@ func getAll() []Member {
 	if err != nil {
 		panic(err)
 	}
+	defer rows.Close()
 
 	members := []Member{}
 	for rows.Next() {

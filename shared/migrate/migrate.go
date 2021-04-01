@@ -32,6 +32,8 @@ func getMigrations(db *sql.DB) ([]string, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
+
 	filenames := []string{}
 	var filename string
 	for rows.Next() {

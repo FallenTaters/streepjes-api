@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"net/http"
+	"time"
 
 	"git.fuyu.moe/Fuyu/router"
 	"github.com/PotatoesFall/streepjes/domain/catalog"
@@ -48,5 +49,17 @@ func getMembers(c *router.Context) error {
 }
 
 func postOrder(c *router.Context, order orders.Order) error {
-	return c.NoContent(http.StatusNotImplemented)
+	order.BartenderID = users.MustGetByUsername(getUsernameFromContext(c)).ID
+	order.OrderTime = time.Now()
+	if order.Status != orders.OrderStatusOpen && order.Status != orders.OrderStatusPaid {
+		return c.String(http.StatusBadRequest, `Status must be "Open" or "Paid".`)
+	}
+	order.StatusTime = time.Now()
+
+	err := orders.AddOrder(order)
+	if err != nil {
+		panic(err)
+	}
+
+	return c.NoContent(http.StatusOK)
 }

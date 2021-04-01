@@ -67,3 +67,11 @@ func Insert(name, username, password string, role Role) error {
 
 	return insert(name, username, hash, role)
 }
+
+func MustGetByUsername(username string) User {
+	user, err := getUserByUsername(username)
+	if err != nil {
+		panic(err)
+	}
+	return user
+}

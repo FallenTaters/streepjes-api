@@ -19,6 +19,7 @@ func getCatalog() Catalog {
 	if err != nil {
 		panic(err)
 	}
+	defer rows.Close()
 
 	categories, products := []Category{}, []Product{}
 	categorySeen := map[int]bool{}

@@ -38,8 +38,10 @@ CREATE TABLE product (
 CREATE UNIQUE INDEX idx_product_category_name ON product(category_id, name);
 CREATE INDEX idx_product_category ON product(category_id);
 
+
 CREATE TABLE "order" (
     id INTEGER PRIMARY KEY,
+    club INTEGER NOT NULL,
     bartender_id INTEGER NOT NULL,
     member_id INTEGER NULL,
     contents BLOB NOT NULL,
