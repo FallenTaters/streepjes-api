@@ -38,25 +38,25 @@ func LogIn(w http.ResponseWriter, c Credentials) User {
 	return user
 }
 
-func LogOut(username string) {
-	removeToken(username)
+func LogOut(userID int) {
+	removeToken(userID)
 }
 
 func RefreshToken(username string) {
 	refreshToken(username)
 }
 
-func ValidateToken(username, token string) bool {
+func ValidateToken(username, token string) (User, bool) {
 	user, err := getUserByUsername(username)
 	if err != nil {
-		return false
+		return User{}, false
 	}
 
 	if time.Since(user.AuthDatetime) > loginTime || token != user.AuthToken {
-		return false
+		return User{}, false
 	}
 
-	return true
+	return user, true
 }
 
 func Insert(name, username, password string, role Role) error {
