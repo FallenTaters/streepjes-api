@@ -19,8 +19,8 @@ func postActive(c *router.Context) error {
 }
 
 func postLogin(c *router.Context, credentials users.Credentials) error {
-	user := users.LogIn(c.Response, credentials)
-	if user.Role == users.RoleNotAuthorized {
+	user, err := users.LogIn(c.Response, credentials)
+	if err != nil || user.Role == users.RoleNotAuthorized {
 		return c.String(http.StatusUnauthorized, `invalid username or password`)
 	}
 
@@ -35,7 +35,10 @@ func postLogin(c *router.Context, credentials users.Credentials) error {
 
 func postLogout(c *router.Context) error {
 	shared.UnsetCookie(c.Response, authCookieName)
-	users.LogOut(getUserFromContext(c).ID)
+	err := users.LogOut(getUserFromContext(c))
+	if err != nil {
+		panic(err)
+	}
 	return c.NoContent(http.StatusOK)
 }
 
@@ -50,7 +53,7 @@ func getMembers(c *router.Context) error {
 }
 
 func postOrder(c *router.Context, order orders.Order) error {
-	order.BartenderID = getUserFromContext(c).ID
+	order.Bartender = getUserFromContext(c).Username
 	order.OrderTime = time.Now()
 	if order.Status != orders.OrderStatusOpen && order.Status != orders.OrderStatusPaid {
 		return c.String(http.StatusBadRequest, `Status must be "Open" or "Paid".`)
@@ -78,7 +81,7 @@ func getOrders(c *router.Context) error {
 	case users.RoleAdmin:
 		filter.Club = null.NewInt(user.Club.Int())
 	case users.RoleBartender:
-		filter.BartenderID = null.NewInt(user.ID)
+		filter.Bartender = null.NewString(user.Username)
 	default:
 		return c.StatusText(http.StatusUnauthorized)
 	}

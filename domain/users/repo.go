@@ -1,80 +1,110 @@
 package users
 
 import (
-	"database/sql"
-	"time"
+	"encoding/json"
+	"errors"
+
+	"github.com/PotatoesFall/streepjes/shared"
+	"go.etcd.io/bbolt"
 )
 
-var db *sql.DB
+var db *bbolt.DB
 
-var selectBase = `SELECT id, club, name, username, password, role, auth_token, auth_datetime FROM user `
-
-func getUserByUsername(username string) (User, error) {
-	row := db.QueryRow(selectBase+`WHERE username = $username;`, username)
-	return scanUser(row)
-}
-
-func insert(user User) error {
-	_, err := db.Exec(`INSERT INTO user(name, club, username, password, role) VALUES($1, $2, $3, $4, $5)`, user.Name, user.Club, user.Username, user.Password, user.Role)
-	return err
-}
-
-func removeToken(id int) {
-	_, err := db.Exec(`UPDATE user SET auth_datetime = $time WHERE id = $id;`, time.Now().Add(-loginTime), id)
-	if err != nil {
-		panic(err)
-	}
-}
-
-func setToken(user User) error {
-	res, err := db.Exec(`UPDATE user SET auth_token = $token, auth_datetime = $time WHERE username = $username;`, user.AuthToken, time.Now(), user.Username)
-	if err != nil {
-		return err
-	}
-
-	affected, err := res.RowsAffected()
-	if err != nil || affected != 1 {
-		return err
-	}
-
-	return nil
-}
-
-func refreshToken(username string) {
-	_, err := db.Exec(`UPDATE user SET auth_datetime = $time WHERE username = $username;`, time.Now(), username)
-	if err != nil {
-		panic(err)
-	}
-}
+var (
+	ErrUserNotFound      = errors.New("user not found")
+	ErrUserAlreadyExists = errors.New("user already exists")
+)
 
 func getAll() []User {
-	rows, err := db.Query(selectBase + `;`)
+	users := []User{}
+
+	err := db.View(func(tx *bbolt.Tx) error {
+		b := tx.Bucket(shared.UsersBucket)
+		return b.ForEach(func(_, v []byte) error {
+			users = append(users, _unmarshal(v))
+			return nil
+		})
+	})
 	if err != nil {
 		panic(err)
-	}
-	defer rows.Close() //nolint: errcheck
-
-	users := []User{}
-	for rows.Next() {
-		users = append(users, mustScanUser(rows))
 	}
 
 	return users
 }
 
-func mustScanUser(rows Scanner) User {
-	u, err := scanUser(rows)
+func get(username string) (User, error) {
+	var user User
+
+	err := db.View(func(tx *bbolt.Tx) error {
+		var err error
+		user, err = _get(tx, username)
+		return err
+	})
+
+	return user, err
+}
+
+func create(user User) error {
+	return db.Update(func(tx *bbolt.Tx) error {
+		_, err := _get(tx, user.Username)
+		if err == nil {
+			return ErrUserAlreadyExists
+		} else if err != ErrUserNotFound {
+			return err
+		}
+
+		return _put(tx, user)
+	})
+}
+
+func update(username string, mutate func(User) (User, error)) error {
+	return db.Update(func(tx *bbolt.Tx) error {
+		user, err := _get(tx, username)
+		if err != nil {
+			return err
+		}
+
+		newUser, err := mutate(user)
+		if err != nil {
+			return err
+		}
+		if newUser.Username != user.Username {
+			panic("key change not implemented!")
+		}
+
+		return _put(tx, newUser)
+	})
+}
+
+func _get(tx *bbolt.Tx, username string) (User, error) {
+	b := tx.Bucket(shared.UsersBucket)
+
+	data := b.Get([]byte(username))
+	if data == nil {
+		return User{}, ErrUserNotFound
+	}
+
+	return _unmarshal(data), nil
+}
+
+func _put(tx *bbolt.Tx, user User) error {
+	b := tx.Bucket(shared.UsersBucket)
+	return b.Put([]byte(user.Username), _marshal(user))
+}
+
+func _unmarshal(data []byte) User {
+	var u User
+	err := json.Unmarshal(data, &u)
 	if err != nil {
 		panic(err)
 	}
 	return u
 }
 
-func scanUser(rows Scanner) (User, error) {
-	var u User
-	return u, rows.Scan(&u.ID, &u.Club, &u.Name, &u.Username, &u.Password, &u.Role, &u.AuthToken, &u.AuthDatetime)
-}
-
-type Scanner interface {
-	Scan(...interface{}) error
+func _marshal(user User) []byte {
+	data, err := json.Marshal(user)
+	if err != nil {
+		panic(err)
+	}
+	return data
 }

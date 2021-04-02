@@ -19,18 +19,18 @@ const (
 //go:generate enumer -json -linecomment -type OrderStatus
 
 type Order struct {
-	ID          int         `json:"id"`
-	Club        shared.Club `json:"club"`
-	BartenderID int         `json:"bartenderId"`
-	MemberID    int         `json:"memberId"`
-	Contents    string      `json:"contents"`
-	Price       int         `json:"price"`
-	OrderTime   time.Time   `json:"orderDate"`
-	Status      OrderStatus `json:"status"`
-	StatusTime  time.Time   `json:"statusDate"`
+	ID         int         `json:"id"`
+	Club       shared.Club `json:"club"`
+	Bartender  string      `json:"bartender"`
+	MemberID   int         `json:"memberId"`
+	Contents   string      `json:"contents"`
+	Price      int         `json:"price"`
+	OrderTime  time.Time   `json:"orderDate"`
+	Status     OrderStatus `json:"status"`
+	StatusTime time.Time   `json:"statusDate"`
 }
 
 type Filter struct {
-	Club        null.Int `json:"club"`
-	BartenderID null.Int `json:"bartenderId"`
+	Club      null.Int    `json:"club"`
+	Bartender null.String `json:"bartender"`
 }

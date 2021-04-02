@@ -54,7 +54,10 @@ func authMiddleware(next router.Handle) router.Handle {
 
 		// refresh cookie duration
 		shared.SetCookie(c.Response, authCookieName, cookieValue, authCookieDuration)
-		users.RefreshToken(cookie.Username)
+		err = users.RefreshToken(users.User{Username: cookie.Username})
+		if err != nil {
+			panic(err)
+		}
 
 		return next(c)
 	}

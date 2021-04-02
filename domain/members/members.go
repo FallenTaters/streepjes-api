@@ -1,8 +1,10 @@
 package members
 
-import "database/sql"
+import (
+	"go.etcd.io/bbolt"
+)
 
-func Init(database *sql.DB) {
+func Init(database *bbolt.DB) {
 	db = database
 }
 

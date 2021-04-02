@@ -1,13 +1,14 @@
 package catalog
 
 import (
-	"database/sql"
 	"time"
+
+	"go.etcd.io/bbolt"
 )
 
 const cacheTime = time.Minute
 
-func Init(database *sql.DB) {
+func Init(database *bbolt.DB) {
 	db = database
 }
 

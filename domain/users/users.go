@@ -1,11 +1,11 @@
 package users
 
 import (
-	"database/sql"
 	"net/http"
 	"time"
 
 	"github.com/PotatoesFall/streepjes/shared"
+	"go.etcd.io/bbolt"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -14,45 +14,47 @@ const (
 	loginTime   = 5 * time.Minute
 )
 
-func Init(database *sql.DB) {
+func Init(database *bbolt.DB) {
 	db = database
 }
 
-func LogIn(w http.ResponseWriter, c Credentials) User {
-	user, err := getUserByUsername(c.Username)
-	if err != nil {
-		return User{Role: RoleNotAuthorized}
-	}
+func LogIn(w http.ResponseWriter, c Credentials) (User, error) {
+	var u User
+	return u, update(c.Username, func(user User) (User, error) {
+		err := bcrypt.CompareHashAndPassword(user.Password, []byte(c.Password))
+		if err != nil {
+			return User{}, err
+		}
 
-	err = bcrypt.CompareHashAndPassword(user.Password, []byte(c.Password))
-	if err != nil {
-		return User{Role: RoleNotAuthorized}
-	}
+		user.AuthToken = shared.GenerateToken(tokenLength)
+		user.AuthTime = time.Now()
+		u = user
 
-	user.AuthToken = shared.GenerateToken(tokenLength)
-	err = setToken(user)
-	if err != nil {
-		panic(err)
-	}
-
-	return user
+		return user, nil
+	})
 }
 
-func LogOut(userID int) {
-	removeToken(userID)
+func LogOut(user User) error {
+	return update(user.Username, func(user User) (User, error) {
+		user.AuthTime = time.Now().Add(-loginTime)
+		return user, nil
+	})
 }
 
-func RefreshToken(username string) {
-	refreshToken(username)
+func RefreshToken(user User) error {
+	return update(user.Username, func(user User) (User, error) {
+		user.AuthTime = time.Now()
+		return user, nil
+	})
 }
 
 func ValidateToken(username, token string) (User, bool) {
-	user, err := getUserByUsername(username)
+	user, err := get(username)
 	if err != nil {
 		return User{}, false
 	}
 
-	if time.Since(user.AuthDatetime) > loginTime || token != user.AuthToken {
+	if time.Since(user.AuthTime) > loginTime || token != user.AuthToken {
 		return User{}, false
 	}
 
@@ -66,11 +68,11 @@ func Insert(user User) error {
 	}
 	user.Password = hash
 
-	return insert(user)
+	return create(user)
 }
 
 func MustGetByUsername(username string) User {
-	user, err := getUserByUsername(username)
+	user, err := get(username)
 	if err != nil {
 		panic(err)
 	}

@@ -1,14 +1,14 @@
 package main
 
 import (
-	"database/sql"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 	"os"
+	"time"
 
-	_ "github.com/mattn/go-sqlite3"
+	"go.etcd.io/bbolt"
 
 	"git.fuyu.moe/Fuyu/router"
 	"github.com/PotatoesFall/streepjes/domain/catalog"
@@ -19,7 +19,9 @@ import (
 	"github.com/PotatoesFall/streepjes/shared/migrate"
 )
 
-var db *sql.DB
+var db *bbolt.DB
+
+const path = "streepjes.db"
 
 func main() {
 	readSettings()
@@ -50,13 +52,13 @@ func main() {
 }
 
 func getDB() {
-	database, err := sql.Open("sqlite3", "./streepjes.db")
+	database, err := bbolt.Open(path, 0666, &bbolt.Options{Timeout: 1 * time.Second})
 	if err != nil {
 		panic(err)
 	}
 	db = database
 
-	err = migrate.Migrate(db)
+	err = migrate.Migrate(database)
 	if err != nil {
 		panic(err)
 	}

@@ -1,52 +1,83 @@
 package orders
 
 import (
-	"database/sql"
+	"encoding/json"
+	"errors"
 
-	"github.com/PotatoesFall/streepjes/shared/sql/wherebuilder"
+	"github.com/PotatoesFall/streepjes/shared"
+	"go.etcd.io/bbolt"
 )
 
-var db *sql.DB
+var db *bbolt.DB
 
-var selectBase = `SELECT id, club, bartender_id, member_id, contents, price, order_datetime, status, status_datetime FROM "order"`
+var (
+	ErrOrderNotFound      = errors.New("order not found")
+	ErrOrderAlreadyExists = errors.New("order already exists")
+)
 
-var insertOrderQ = `INSERT INTO "order"(club, bartender_id, member_id, contents, price, order_datetime, status, status_datetime)
-VALUES($1, $2, $3, $4, $5, $6, $7, $8);`
+func filtered(filterFunc func(Order) bool) []Order {
+	orders := []Order{}
 
-func insertOrder(order Order) error {
-	_, err := db.Exec(insertOrderQ, order.Club, order.BartenderID, order.MemberID, order.Contents, order.Price, order.OrderTime, order.Status, order.StatusTime)
-	return err
+	err := db.View(func(tx *bbolt.Tx) error {
+		b := tx.Bucket(shared.OrdersBucket)
+		return b.ForEach(func(_, v []byte) error {
+			order := _unmarshal(v)
+			if filterFunc(order) {
+				orders = append(orders, order)
+			}
+
+			return nil
+		})
+	})
+	if err != nil {
+		panic(err)
+	}
+
+	return orders
 }
 
-func mustScanOrder(rows *sql.Rows) Order {
+func create(o Order) error {
+	return db.Update(func(tx *bbolt.Tx) error {
+		_, err := _get(tx, o.ID)
+		if err == nil {
+			return ErrOrderAlreadyExists
+		} else if err != ErrOrderNotFound {
+			return err
+		}
+
+		return _put(tx, o)
+	})
+}
+
+func _get(tx *bbolt.Tx, id int) (Order, error) {
+	b := tx.Bucket(shared.OrdersBucket)
+
+	data := b.Get(shared.Itob(id))
+	if data == nil {
+		return Order{}, ErrOrderNotFound
+	}
+
+	return _unmarshal(data), nil
+}
+
+func _put(tx *bbolt.Tx, order Order) error {
+	b := tx.Bucket(shared.OrdersBucket)
+	return b.Put(shared.Itob(order.ID), _marshal(order))
+}
+
+func _unmarshal(data []byte) Order {
 	var o Order
-	err := rows.Scan(&o.ID, &o.Club, &o.BartenderID, &o.MemberID, &o.Contents, &o.Price, &o.OrderTime, &o.Status, &o.StatusTime)
+	err := json.Unmarshal(data, &o)
 	if err != nil {
 		panic(err)
 	}
 	return o
 }
 
-func getOrders(filter Filter) []Order {
-	wb := wherebuilder.New(selectBase)
-
-	if filter.BartenderID.Valid {
-		wb.Where(`bartender_id = ` + filter.BartenderID.String())
-	}
-	if filter.Club.Valid {
-		wb.Where(`club = ` + filter.Club.String())
-	}
-
-	rows, err := db.Query(wb.Query())
+func _marshal(o Order) []byte {
+	data, err := json.Marshal(o)
 	if err != nil {
 		panic(err)
 	}
-	defer rows.Close() //nolint: errcheck
-
-	var orders []Order
-	for rows.Next() {
-		orders = append(orders, mustScanOrder(rows))
-	}
-
-	return orders
+	return data
 }

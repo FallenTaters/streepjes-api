@@ -1,49 +1,71 @@
 package catalog
 
 import (
-	"database/sql"
+	"encoding/json"
+
+	"github.com/PotatoesFall/streepjes/shared"
+	"go.etcd.io/bbolt"
 )
 
-var db *sql.DB
-
-const getCatalogQuery = `
-	SELECT C.id, C.name, P.id, P.name, P.price_parabool, P.price_gladiators
-	FROM category C
-		INNER JOIN product P
-			ON C.id = P.category_id
-	;
-`
+var db *bbolt.DB
 
 func getCatalog() Catalog {
-	rows, err := db.Query(getCatalogQuery)
+	c := Catalog{}
+	err := db.View(func(tx *bbolt.Tx) error {
+		c.Categories = _getCategories(tx)
+		c.Products = _getProducts(tx)
+		return nil
+	})
 	if err != nil {
 		panic(err)
 	}
-	defer rows.Close()
+	return c
+}
 
-	categories, products := []Category{}, []Product{}
-	categorySeen := map[int]bool{}
+func _getCategories(tx *bbolt.Tx) []Category {
+	b := tx.Bucket(shared.CategoriesBucket)
 
-	for rows.Next() {
-		var category Category
-		var product Product
-
-		err = rows.Scan(
-			&category.ID, &category.Name,
-			&product.ID, &product.Name,
-			&product.PriceParabool, &product.PriceGladiators,
-		)
-		if err != nil {
-			panic(err)
-		}
-		product.CategoryID = category.ID
-
-		if !categorySeen[category.ID] {
-			categories = append(categories, category)
-			categorySeen[category.ID] = true
-		}
-		products = append(products, product)
+	categories := []Category{}
+	err := b.ForEach(func(_, v []byte) error {
+		categories = append(categories, _makeCategory(v))
+		return nil
+	})
+	if err != nil {
+		panic(err)
 	}
 
-	return Catalog{categories, products}
+	return categories
+}
+
+func _makeCategory(data []byte) Category {
+	var c Category
+	err := json.Unmarshal(data, &c)
+	if err != nil {
+		panic(err)
+	}
+	return c
+}
+
+func _getProducts(tx *bbolt.Tx) []Product {
+	b := tx.Bucket(shared.ProductsBucket)
+
+	products := []Product{}
+	err := b.ForEach(func(_, v []byte) error {
+		products = append(products, _makeProduct(v))
+		return nil
+	})
+	if err != nil {
+		panic(err)
+	}
+
+	return products
+}
+
+func _makeProduct(data []byte) Product {
+	var c Product
+	err := json.Unmarshal(data, &c)
+	if err != nil {
+		panic(err)
+	}
+	return c
 }

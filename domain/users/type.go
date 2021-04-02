@@ -12,12 +12,38 @@ type Credentials struct {
 }
 
 type User struct {
-	ID           int         `json:"ID"`
-	Club         shared.Club `json:"club"`
-	Name         string      `json:"name"`
-	Username     string      `json:"username"`
-	Password     []byte      `json:"-"`
-	Role         Role        `json:"role"`
-	AuthToken    string      `json:"-"`
-	AuthDatetime time.Time   `json:"-"`
+	Username string `json:"username"`
+
+	Club shared.Club `json:"club"`
+	Name string      `json:"name"`
+	Role Role        `json:"role"`
+
+	Password  []byte    `json:"password"`
+	AuthToken string    `json:"authToken"`
+	AuthTime  time.Time `json:"authDate"`
+}
+
+func (u User) AsPayload() UserPayload {
+	return UserPayload{
+		Username: u.Username,
+		Club:     u.Club,
+		Name:     u.Name,
+		Role:     u.Role,
+	}
+}
+
+type UserPayload struct {
+	Username string      `json:"username"`
+	Club     shared.Club `json:"club"`
+	Name     string      `json:"name"`
+	Role     Role        `json:"role"`
+}
+
+func (u UserPayload) AsUser() User {
+	return User{
+		Username: u.Username,
+		Club:     u.Club,
+		Name:     u.Name,
+		Role:     u.Role,
+	}
 }
