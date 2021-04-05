@@ -30,7 +30,11 @@ type Order struct {
 	StatusTime time.Time   `json:"statusDate"`
 }
 
-type Filter struct {
+func (o Order) Key() []byte {
+	return shared.Itob(o.ID)
+}
+
+type OrderFilter struct {
 	Club      null.Int    `json:"club"`
 	Bartender null.String `json:"bartender"`
 }

@@ -75,7 +75,7 @@ func getUsers(c *router.Context) error {
 
 func getOrders(c *router.Context) error {
 	user := getUserFromContext(c)
-	filter := orders.Filter{}
+	filter := orders.OrderFilter{}
 
 	switch user.Role {
 	case users.RoleAdmin:
@@ -86,6 +86,6 @@ func getOrders(c *router.Context) error {
 		return c.StatusText(http.StatusUnauthorized)
 	}
 
-	orders := orders.Get(filter)
+	orders := orders.Filter(filter)
 	return c.JSON(http.StatusOK, orders)
 }

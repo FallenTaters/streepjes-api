@@ -1,18 +1,19 @@
 package orders
 
 import (
+	"github.com/PotatoesFall/bbucket"
 	"go.etcd.io/bbolt"
 )
 
-func Init(database *bbolt.DB) {
-	db = database
+func Init(db *bbolt.DB) {
+	ordersBucket = bbucket.New(db, []byte("orders"))
 }
 
 func AddOrder(order Order) error {
 	return create(order)
 }
 
-func Get(filter Filter) []Order {
+func Filter(filter OrderFilter) []Order {
 	return filtered(func(o Order) bool {
 		if filter.Club.Valid && filter.Club.Int64 != int64(o.Club) {
 			return false
