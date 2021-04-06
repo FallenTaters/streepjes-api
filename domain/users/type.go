@@ -23,6 +23,10 @@ type User struct {
 	AuthTime  time.Time `json:"authDate"`
 }
 
+func (u User) Key() []byte {
+	return []byte(u.Username)
+}
+
 func (u User) AsPayload() UserPayload {
 	return UserPayload{
 		Username: u.Username,

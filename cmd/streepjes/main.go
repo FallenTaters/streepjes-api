@@ -6,28 +6,19 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
-	"time"
-
-	"go.etcd.io/bbolt"
 
 	"git.fuyu.moe/Fuyu/router"
-	"github.com/PotatoesFall/streepjes/domain/catalog"
-	"github.com/PotatoesFall/streepjes/domain/members"
-	"github.com/PotatoesFall/streepjes/domain/orders"
 	"github.com/PotatoesFall/streepjes/domain/users"
 	"github.com/PotatoesFall/streepjes/shared"
-	"github.com/PotatoesFall/streepjes/shared/migrate"
+	"github.com/PotatoesFall/streepjes/shared/buckets"
 )
-
-var db *bbolt.DB
-
-const path = "streepjes.db"
 
 func main() {
 	readSettings()
-	getDB()
-	defer db.Close()
-	initStuff()
+
+	shared.Init(settings.DisableSecure)
+	close := buckets.Init()
+	defer close()
 
 	r := router.New()
 
@@ -49,27 +40,6 @@ func main() {
 	ad.GET(`/users`, getUsers)
 
 	panic(r.Start(`:` + settings.Port))
-}
-
-func getDB() {
-	database, err := bbolt.Open(path, 0666, &bbolt.Options{Timeout: 1 * time.Second})
-	if err != nil {
-		panic(err)
-	}
-	db = database
-
-	err = migrate.Migrate(database)
-	if err != nil {
-		panic(err)
-	}
-}
-
-func initStuff() {
-	shared.Init(settings.DisableSecure)
-	catalog.Init(db)
-	users.Init(db)
-	members.Init(db)
-	orders.Init(db)
 }
 
 func errorHandler(c *router.Context, v interface{}) {

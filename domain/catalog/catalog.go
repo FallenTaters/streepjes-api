@@ -2,23 +2,21 @@ package catalog
 
 import (
 	"time"
-
-	"go.etcd.io/bbolt"
 )
 
 const cacheTime = time.Minute
 
-func Init(database *bbolt.DB) {
-	db = database
-}
-
-func Get() Catalog {
+func Get() (Catalog, error) {
 	if time.Since(lastCatalog.Time) > cacheTime {
-		lastCatalog.Catalog = getCatalog()
+		c, err := getCatalog()
+		if err != nil {
+			return Catalog{}, err
+		}
+		lastCatalog.Catalog = c
 		lastCatalog.Time = time.Now()
 	}
 
-	return lastCatalog.Catalog
+	return lastCatalog.Catalog, nil
 }
 
 var lastCatalog struct {

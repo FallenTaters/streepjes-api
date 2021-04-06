@@ -5,6 +5,7 @@ import (
 	"github.com/PotatoesFall/streepjes/domain/members"
 	"github.com/PotatoesFall/streepjes/domain/users"
 	"github.com/PotatoesFall/streepjes/shared"
+	"github.com/PotatoesFall/streepjes/shared/buckets"
 )
 
 var testUsers = []users.User{
@@ -33,7 +34,7 @@ var testData = []bucketData{
 		[]byte("members"),
 		[]keyValuePair{
 			{
-				shared.Itob(1),
+				buckets.Itob(1),
 				members.Member{
 					ID:   1,
 					Club: shared.ClubGladiators,
@@ -41,7 +42,7 @@ var testData = []bucketData{
 					Debt: 1234,
 				},
 			}, {
-				shared.Itob(2),
+				buckets.Itob(2),
 				members.Member{
 					ID:   2,
 					Club: shared.ClubGladiators,
@@ -49,7 +50,7 @@ var testData = []bucketData{
 					Debt: 2345,
 				},
 			}, {
-				shared.Itob(3),
+				buckets.Itob(3),
 				members.Member{
 					ID:   3,
 					Club: shared.ClubParabool,
@@ -57,7 +58,7 @@ var testData = []bucketData{
 					Debt: 4567,
 				},
 			}, {
-				shared.Itob(4),
+				buckets.Itob(4),
 				members.Member{
 					ID:   4,
 					Club: shared.ClubParabool,
@@ -70,13 +71,13 @@ var testData = []bucketData{
 		[]byte("categories"),
 		[]keyValuePair{
 			{
-				shared.Itob(1),
+				buckets.Itob(1),
 				catalog.Category{
 					ID:   1,
 					Name: "Drinks",
 				},
 			}, {
-				shared.Itob(2),
+				buckets.Itob(2),
 				catalog.Category{
 					ID:   2,
 					Name: "Snacks",
@@ -87,7 +88,7 @@ var testData = []bucketData{
 		[]byte("products"),
 		[]keyValuePair{
 			{
-				shared.Itob(1),
+				buckets.Itob(1),
 				catalog.Product{
 					ID:              1,
 					CategoryID:      1,
@@ -96,7 +97,7 @@ var testData = []bucketData{
 					PriceGladiators: 150,
 				},
 			}, {
-				shared.Itob(2),
+				buckets.Itob(2),
 				catalog.Product{
 					ID:              2,
 					CategoryID:      1,
@@ -105,7 +106,7 @@ var testData = []bucketData{
 					PriceGladiators: 210,
 				},
 			}, {
-				shared.Itob(3),
+				buckets.Itob(3),
 				catalog.Product{
 					ID:              3,
 					CategoryID:      1,
@@ -114,7 +115,7 @@ var testData = []bucketData{
 					PriceGladiators: 170,
 				},
 			}, {
-				shared.Itob(4),
+				buckets.Itob(4),
 				catalog.Product{
 					ID:              4,
 					CategoryID:      2,
@@ -123,7 +124,7 @@ var testData = []bucketData{
 					PriceGladiators: 120,
 				},
 			}, {
-				shared.Itob(5),
+				buckets.Itob(5),
 				catalog.Product{
 					ID:              5,
 					CategoryID:      2,
@@ -132,7 +133,7 @@ var testData = []bucketData{
 					PriceGladiators: 140,
 				},
 			}, {
-				shared.Itob(6),
+				buckets.Itob(6),
 				catalog.Product{
 					ID:              6,
 					CategoryID:      2,

@@ -43,12 +43,19 @@ func postLogout(c *router.Context) error {
 }
 
 func getCatalog(c *router.Context) error {
-	cat := catalog.Get()
+	cat, err := catalog.Get()
+	if err != nil {
+		panic(err)
+	}
 	return c.JSON(http.StatusOK, cat)
 }
 
 func getMembers(c *router.Context) error {
-	members := members.GetAll()
+	members, err := members.GetAll()
+	if err != nil {
+		panic(err)
+	}
+
 	return c.JSON(http.StatusOK, members)
 }
 
@@ -69,7 +76,11 @@ func postOrder(c *router.Context, order orders.Order) error {
 }
 
 func getUsers(c *router.Context) error {
-	users := users.GetAll()
+	users, err := users.GetAll()
+	if err != nil {
+		panic(err)
+	}
+
 	return c.JSON(http.StatusOK, users)
 }
 
@@ -86,6 +97,10 @@ func getOrders(c *router.Context) error {
 		return c.StatusText(http.StatusUnauthorized)
 	}
 
-	orders := orders.Filter(filter)
+	orders, err := orders.Filter(filter)
+	if err != nil {
+		panic(err)
+	}
+
 	return c.JSON(http.StatusOK, orders)
 }

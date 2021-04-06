@@ -2,43 +2,22 @@ package main
 
 import (
 	"encoding/json"
-	"time"
 
-	"github.com/PotatoesFall/streepjes/domain/catalog"
-	"github.com/PotatoesFall/streepjes/domain/members"
-	"github.com/PotatoesFall/streepjes/domain/orders"
 	"github.com/PotatoesFall/streepjes/domain/users"
-	"github.com/PotatoesFall/streepjes/shared"
-	"github.com/PotatoesFall/streepjes/shared/migrate"
+	"github.com/PotatoesFall/streepjes/shared/buckets"
 	"go.etcd.io/bbolt"
 )
 
-var db *bbolt.DB
-
-const path = "streepjes.db"
-
 func main() {
-	getDB()
-	initStuff()
+	close := buckets.Init()
+	defer close()
 
+	deleteData()
 	insertUsers()
 	insertData()
 }
 
-func getDB() {
-	database, err := bbolt.Open(path, 0666, &bbolt.Options{Timeout: 1 * time.Second})
-	if err != nil {
-		panic(err)
-	}
-	db = database
-
-	err = migrate.Migrate(database)
-	if err != nil {
-		panic(err)
-	}
-}
-
-var buckets = []string{
+var bucketNames = []string{
 	"users",
 	"categories",
 	"products",
@@ -46,19 +25,13 @@ var buckets = []string{
 	"orders",
 }
 
-func initStuff() {
-	_ = db.Update(func(tx *bbolt.Tx) error {
-		for _, bucket := range buckets {
+func deleteData() {
+	_ = buckets.DB.Update(func(tx *bbolt.Tx) error {
+		for _, bucket := range bucketNames {
 			_ = tx.DeleteBucket([]byte(bucket))
 		}
 		return nil
 	})
-
-	catalog.Init(db)
-	users.Init(db)
-	members.Init(db)
-	orders.Init(db)
-	shared.CreateBuckets(db)
 }
 
 func insertUsers() {
@@ -71,7 +44,7 @@ func insertUsers() {
 }
 
 func insertData() {
-	err := db.Update(func(tx *bbolt.Tx) error {
+	err := buckets.DB.Update(func(tx *bbolt.Tx) error {
 		for _, bucket := range testData {
 			b := tx.Bucket(bucket.Bucket)
 			for _, pair := range bucket.Pairs {

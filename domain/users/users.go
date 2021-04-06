@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/PotatoesFall/streepjes/shared"
-	"go.etcd.io/bbolt"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -13,10 +12,6 @@ const (
 	tokenLength = 32
 	loginTime   = 5 * time.Minute
 )
-
-func Init(database *bbolt.DB) {
-	db = database
-}
 
 func LogIn(w http.ResponseWriter, c Credentials) (User, error) {
 	var u User
@@ -79,6 +74,6 @@ func MustGetByUsername(username string) User {
 	return user
 }
 
-func GetAll() []User {
+func GetAll() ([]User, error) {
 	return getAll()
 }
