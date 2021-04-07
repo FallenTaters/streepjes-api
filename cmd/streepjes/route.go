@@ -3,9 +3,11 @@ package main
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 	"time"
 
 	"git.fuyu.moe/Fuyu/router"
+	"github.com/PotatoesFall/bbucket"
 	"github.com/PotatoesFall/streepjes/domain/catalog"
 	"github.com/PotatoesFall/streepjes/domain/members"
 	"github.com/PotatoesFall/streepjes/domain/orders"
@@ -103,4 +105,21 @@ func getOrders(c *router.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, orders)
+}
+
+func postOrderDelete(c *router.Context) error {
+	id, err := strconv.Atoi(c.Param(`id`))
+	if err != nil {
+		return c.StatusText(http.StatusBadRequest)
+	}
+
+	err = orders.Delete(id)
+	switch err {
+	case bbucket.ErrObjectNotFound:
+		return c.StatusText(http.StatusNotFound)
+	case nil:
+		return c.StatusText(http.StatusOK)
+	default:
+		panic(err)
+	}
 }

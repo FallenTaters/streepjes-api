@@ -15,3 +15,7 @@ func Filter(filter OrderFilter) ([]Order, error) {
 		return true
 	})
 }
+
+func Delete(id int) error {
+	return deleteByID(id)
+}

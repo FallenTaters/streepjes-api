@@ -3,6 +3,7 @@ package orders
 import (
 	"errors"
 
+	"github.com/PotatoesFall/bbucket"
 	"github.com/PotatoesFall/streepjes/shared/buckets"
 )
 
@@ -26,4 +27,8 @@ func filtered(filterFunc func(Order) bool) ([]Order, error) {
 func create(o Order) error {
 	o.ID = buckets.Orders.NextSequence()
 	return buckets.Orders.Create(o.Key(), o)
+}
+
+func deleteByID(id int) error {
+	return buckets.Orders.Delete(bbucket.Itob(id))
 }
