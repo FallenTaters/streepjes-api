@@ -42,5 +42,25 @@ func create(o Order) error {
 }
 
 func deleteByID(id int) error {
-	return buckets.Orders.Delete(bbucket.Itob(id))
+	var o Order
+
+	err := buckets.Orders.Update(bbucket.Itob(id), &Order{}, func(ptr interface{}) (object interface{}, err error) {
+		order := *ptr.(*Order)
+		o = order
+
+		order.Status = OrderStatusCancelled
+
+		return order, nil
+	})
+	if err != nil || o.MemberID == 0 || o.Status != OrderStatusOpen {
+		return err
+	}
+
+	return buckets.Members.Update(bbucket.Itob(o.MemberID), &members.Member{}, func(ptr interface{}) (object interface{}, err error) {
+		member := *ptr.(*members.Member)
+
+		member.Debt -= o.Price
+
+		return member, nil
+	})
 }

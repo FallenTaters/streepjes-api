@@ -95,6 +95,7 @@ func getOrders(c *router.Context) error {
 		filter.Club = null.NewInt(user.Club.Int())
 	case users.RoleBartender:
 		filter.Bartender = null.NewString(user.Username)
+		filter.Status = null.NewInt(int(orders.OrderStatusOpen))
 	default:
 		return c.StatusText(http.StatusUnauthorized)
 	}
