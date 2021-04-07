@@ -61,6 +61,7 @@ func Insert(user User) error {
 	if err != nil {
 		return err
 	}
+
 	user.Password = hash
 
 	return create(user)
@@ -71,6 +72,7 @@ func MustGetByUsername(username string) User {
 	if err != nil {
 		panic(err)
 	}
+
 	return user
 }
 

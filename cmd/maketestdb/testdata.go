@@ -39,7 +39,6 @@ var testData = []bucketData{
 					ID:   1,
 					Club: shared.ClubGladiators,
 					Name: "Gladiator1",
-					Debt: 1234,
 				},
 			}, {
 				buckets.Itob(2),
@@ -47,7 +46,6 @@ var testData = []bucketData{
 					ID:   2,
 					Club: shared.ClubGladiators,
 					Name: "Gladiator2",
-					Debt: 2345,
 				},
 			}, {
 				buckets.Itob(3),
@@ -55,7 +53,6 @@ var testData = []bucketData{
 					ID:   3,
 					Club: shared.ClubParabool,
 					Name: "Parabool1",
-					Debt: 4567,
 				},
 			}, {
 				buckets.Itob(4),
@@ -63,7 +60,6 @@ var testData = []bucketData{
 					ID:   4,
 					Club: shared.ClubParabool,
 					Name: "Parabool2",
-					Debt: 5678,
 				},
 			},
 		},

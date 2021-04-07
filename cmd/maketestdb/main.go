@@ -29,7 +29,9 @@ func deleteData() {
 	_ = buckets.DB.Update(func(tx *bbolt.Tx) error {
 		for _, bucket := range bucketNames {
 			_ = tx.DeleteBucket([]byte(bucket))
+			_, _ = tx.CreateBucket([]byte(bucket))
 		}
+
 		return nil
 	})
 }
@@ -52,12 +54,14 @@ func insertData() {
 				if err != nil {
 					panic(err)
 				}
+
 				err = b.Put(pair.Key, data)
 				if err != nil {
 					panic(err)
 				}
 			}
 		}
+
 		return nil
 	})
 	if err != nil {

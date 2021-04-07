@@ -36,6 +36,8 @@ func (o Order) Key() []byte {
 }
 
 type OrderFilter struct {
-	Club      null.Int    `json:"club"`
-	Bartender null.String `json:"bartender"`
+	Club      null.Int
+	Bartender null.String
+	Member    null.Int
+	Status    null.Int
 }
