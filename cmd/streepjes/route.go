@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"net/http"
 	"strconv"
-	"time"
 
 	"git.fuyu.moe/Fuyu/router"
 	"github.com/PotatoesFall/bbucket"
@@ -63,11 +62,9 @@ func getMembers(c *router.Context) error {
 
 func postOrder(c *router.Context, order orders.Order) error {
 	order.Bartender = getUserFromContext(c).Username
-	order.OrderTime = time.Now()
 	if order.Status != orders.OrderStatusOpen && order.Status != orders.OrderStatusPaid {
 		return c.String(http.StatusBadRequest, `Status must be "Open" or "Paid".`)
 	}
-	order.StatusTime = time.Now()
 
 	err := orders.AddOrder(order)
 	if err != nil {
@@ -95,7 +92,6 @@ func getOrders(c *router.Context) error {
 		filter.Club = null.NewInt(user.Club.Int())
 	case users.RoleBartender:
 		filter.Bartender = null.NewString(user.Username)
-		filter.Status = null.NewInt(int(orders.OrderStatusOpen))
 	default:
 		return c.StatusText(http.StatusUnauthorized)
 	}
@@ -114,12 +110,21 @@ func postOrderDelete(c *router.Context) error {
 		return c.StatusText(http.StatusBadRequest)
 	}
 
-	err = orders.Delete(id)
-	switch err {
-	case bbucket.ErrObjectNotFound:
-		return c.StatusText(http.StatusNotFound)
-	case nil:
+	allowed, err := orders.HasPermissions(id, c.Get("user").(users.User))
+	switch {
+	case err == nil && allowed:
+		err = orders.Delete(id)
+		if err != nil {
+			panic(err)
+		}
 		return c.StatusText(http.StatusOK)
+
+	case err == nil && !allowed:
+		return c.StatusText(http.StatusUnauthorized)
+
+	case err == bbucket.ErrObjectNotFound:
+		return c.StatusText(http.StatusNotFound)
+
 	default:
 		panic(err)
 	}

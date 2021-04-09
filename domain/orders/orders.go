@@ -1,5 +1,11 @@
 package orders
 
+import "github.com/PotatoesFall/streepjes/domain/users"
+
+func Get(id int) (Order, error) {
+	return get(id)
+}
+
 func AddOrder(order Order) error {
 	return create(order)
 }
@@ -28,4 +34,21 @@ func Filter(filter OrderFilter) ([]Order, error) {
 
 func Delete(id int) error {
 	return deleteByID(id)
+}
+
+func HasPermissions(id int, user users.User) (bool, error) {
+	order, err := get(id)
+	if err != nil {
+		return false, err
+	}
+
+	switch user.Role {
+	case users.RoleAdmin:
+		return true, nil
+	case users.RoleBartender:
+		editable := order.MemberID == 0 || (order.Status == OrderStatusOpen)
+		return order.Bartender == user.Username && editable, nil
+	}
+
+	return false, users.ErrUserNotFound
 }

@@ -2,6 +2,7 @@ package orders
 
 import (
 	"errors"
+	"time"
 
 	"github.com/PotatoesFall/bbucket"
 	"github.com/PotatoesFall/streepjes/domain/members"
@@ -12,6 +13,11 @@ var (
 	ErrOrderNotFound      = errors.New("order not found")
 	ErrOrderAlreadyExists = errors.New("order already exists")
 )
+
+func get(id int) (Order, error) {
+	var o Order
+	return o, buckets.Orders.Get(bbucket.Itob(id), &o)
+}
 
 func filtered(filterFunc func(Order) bool) ([]Order, error) {
 	orders := []Order{}
@@ -27,6 +33,9 @@ func filtered(filterFunc func(Order) bool) ([]Order, error) {
 
 func create(o Order) error {
 	o.ID = buckets.Orders.NextSequence()
+	o.OrderTime = time.Now()
+	o.StatusTime = o.OrderTime
+
 	err := buckets.Orders.Create(o.Key(), o)
 	if err != nil || o.MemberID == 0 {
 		return err
@@ -49,6 +58,7 @@ func deleteByID(id int) error {
 		o = order
 
 		order.Status = OrderStatusCancelled
+		order.StatusTime = time.Now()
 
 		return order, nil
 	})
