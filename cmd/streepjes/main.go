@@ -36,6 +36,7 @@ func main() {
 	au.POST(`/order`, postOrder)
 	au.GET(`/orders`, getOrders)
 	au.POST(`/order/delete/:id`, postOrderDelete)
+	au.GET(`/club`, getClub)
 
 	ad := au.Group(`/`, roleMiddleware(users.RoleAdmin))
 	ad.GET(`/users`, getUsers)

@@ -19,6 +19,11 @@ func postActive(c *router.Context) error {
 	return c.NoContent(http.StatusOK)
 }
 
+func getClub(c *router.Context) error {
+	user := c.Get("user").(users.User)
+	return c.JSON(http.StatusOK, user.Club)
+}
+
 func postLogin(c *router.Context, credentials users.Credentials) error {
 	user, err := users.LogIn(c.Response, credentials)
 	if err != nil || user.Role == users.RoleNotAuthorized {
