@@ -10,7 +10,7 @@ import (
 
 func main() {
 	close := buckets.Init()
-	defer close()
+	defer close() //nolint: errcheck
 
 	deleteData()
 	insertUsers()
@@ -50,6 +50,8 @@ func insertData() {
 		for _, bucket := range testData {
 			b := tx.Bucket(bucket.Bucket)
 			for _, pair := range bucket.Pairs {
+				b.NextSequence() //nolint: errcheck
+
 				data, err := json.Marshal(pair.Value)
 				if err != nil {
 					panic(err)
