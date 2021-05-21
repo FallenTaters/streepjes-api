@@ -18,7 +18,7 @@ func main() {
 
 	shared.Init(settings.DisableSecure)
 	close := buckets.Init()
-	defer close()
+	defer close() //nolint: errcheck
 
 	r := router.New()
 
@@ -40,6 +40,7 @@ func main() {
 
 	ad := au.Group(`/`, roleMiddleware(users.RoleAdmin))
 	ad.GET(`/users`, getUsers)
+	ad.POST(`/product`, postProduct)
 
 	panic(r.Start(`:` + settings.Port))
 }

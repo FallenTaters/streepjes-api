@@ -134,3 +134,12 @@ func postOrderDelete(c *router.Context) error {
 		panic(err)
 	}
 }
+
+func postProduct(c *router.Context, product catalog.Product) error {
+	err := catalog.PutProduct(product)
+	if err != nil {
+		return c.String(http.StatusBadRequest, err.Error())
+	}
+
+	return c.StatusText(http.StatusOK)
+}

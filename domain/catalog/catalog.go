@@ -19,6 +19,14 @@ func Get() (Catalog, error) {
 	return lastCatalog.Catalog, nil
 }
 
+func PutProduct(product Product) error {
+	if err := validateProduct(product); err != nil {
+		return err
+	}
+
+	return addProduct(product)
+}
+
 var lastCatalog struct {
 	Catalog
 	Time time.Time
