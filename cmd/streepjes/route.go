@@ -143,3 +143,12 @@ func postProduct(c *router.Context, product catalog.Product) error {
 
 	return c.StatusText(http.StatusOK)
 }
+
+func postCategory(c *router.Context, category catalog.Category) error {
+	err := catalog.PutCategory(category)
+	if err != nil {
+		return c.String(http.StatusBadRequest, err.Error())
+	}
+
+	return c.StatusText(http.StatusOK)
+}

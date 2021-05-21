@@ -41,6 +41,7 @@ func main() {
 	ad := au.Group(`/`, roleMiddleware(users.RoleAdmin))
 	ad.GET(`/users`, getUsers)
 	ad.POST(`/product`, postProduct)
+	ad.POST(`/category`, postCategory)
 
 	panic(r.Start(`:` + settings.Port))
 }

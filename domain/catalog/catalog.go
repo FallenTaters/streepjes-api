@@ -41,3 +41,16 @@ func PutProduct(product Product) error {
 	}
 	return addProduct(product)
 }
+
+func PutCategory(category Category) error {
+	if err := validateCategory(category); err != nil {
+		return err
+	}
+
+	cacheValid = false
+
+	if category.ID != 0 {
+		return updateCategory(category)
+	}
+	return addCategory(category)
+}

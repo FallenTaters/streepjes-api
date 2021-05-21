@@ -73,3 +73,41 @@ func categoryExists(id int) bool {
 
 	return found
 }
+
+func validateCategory(category Category) error {
+	original, err := getCategory(category.ID)
+	switch err {
+	case nil:
+		if original.Name != category.Name && categoryNameExists(category.Name) {
+			return ErrNameTaken
+		}
+	case bbucket.ErrObjectNotFound:
+		if categoryNameExists(category.Name) {
+			return ErrNameTaken
+		}
+	default:
+		panic(err)
+	}
+
+	if category.Name == `` {
+		return ErrEmptyName
+	}
+
+	return nil
+}
+
+func categoryNameExists(name string) bool {
+	categories, err := getCategories()
+	if err != nil {
+		panic(err)
+	}
+
+	found := false
+	for _, c := range categories {
+		if c.Name == name {
+			found = true
+		}
+	}
+
+	return found
+}

@@ -41,6 +41,11 @@ func getCategories() ([]Category, error) {
 	})
 }
 
+func getCategory(id int) (Category, error) {
+	var category Category
+	return category, buckets.Categories.Get(buckets.Itob(id), &category)
+}
+
 func getProducts() ([]Product, error) {
 	products := []Product{}
 	return products, buckets.Products.GetAll(&Product{}, func(ptr interface{}) error {
@@ -52,4 +57,15 @@ func getProducts() ([]Product, error) {
 func getProduct(id int) (Product, error) {
 	var product Product
 	return product, buckets.Products.Get(buckets.Itob(id), &product)
+}
+
+func addCategory(category Category) error {
+	category.ID = buckets.Categories.NextSequence()
+	return buckets.Categories.Create(buckets.Itob(category.ID), category)
+}
+
+func updateCategory(category Category) error {
+	return buckets.Categories.Update(buckets.Itob(category.ID), &Category{}, func(ptr interface{}) (object interface{}, err error) {
+		return category, nil
+	})
 }
