@@ -42,6 +42,10 @@ func PutProduct(product Product) error {
 	return addProduct(product)
 }
 
+func DeleteProduct(id int) error {
+	return deleteProduct(id)
+}
+
 func PutCategory(category Category) error {
 	if err := validateCategory(category); err != nil {
 		return err
@@ -53,4 +57,12 @@ func PutCategory(category Category) error {
 		return updateCategory(category)
 	}
 	return addCategory(category)
+}
+
+func DeleteCategory(id int) error {
+	if err := validateDeleteCategory(id); err != nil {
+		return err
+	}
+
+	return deleteCategory(id)
 }

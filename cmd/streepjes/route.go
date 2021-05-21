@@ -152,3 +152,31 @@ func postCategory(c *router.Context, category catalog.Category) error {
 
 	return c.StatusText(http.StatusOK)
 }
+
+func deleteProduct(c *router.Context) error {
+	id, err := strconv.Atoi(c.Param(`id`))
+	if err != nil {
+		return c.String(http.StatusBadRequest, err.Error())
+	}
+
+	err = catalog.DeleteProduct(id)
+	if err != nil {
+		return c.String(http.StatusBadRequest, err.Error())
+	}
+
+	return c.StatusText(http.StatusOK)
+}
+
+func deleteCategory(c *router.Context) error {
+	id, err := strconv.Atoi(c.Param(`id`))
+	if err != nil {
+		return c.String(http.StatusBadRequest, err.Error())
+	}
+
+	err = catalog.DeleteCategory(id)
+	if err != nil {
+		return c.String(http.StatusBadRequest, err.Error())
+	}
+
+	return c.StatusText(http.StatusOK)
+}

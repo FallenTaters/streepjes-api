@@ -7,10 +7,11 @@ import (
 )
 
 var (
-	ErrCategoryNotFound = errors.New("category not found")
-	ErrNameTaken        = errors.New("this name is taken")
-	ErrEmptyName        = errors.New("name may not be empty")
-	ErrNoPrice          = errors.New("product must have at least one price")
+	ErrCategoryNotFound   = errors.New("category not found")
+	ErrNameTaken          = errors.New("this name is taken")
+	ErrEmptyName          = errors.New("name may not be empty")
+	ErrNoPrice            = errors.New("product must have at least one price")
+	ErrCategoryHasProduct = errors.New("category still has products")
 )
 
 func validateProduct(product Product) error {
@@ -110,4 +111,19 @@ func categoryNameExists(name string) bool {
 	}
 
 	return found
+}
+
+func validateDeleteCategory(id int) error {
+	products, err := getProducts()
+	if err != nil {
+		panic(err)
+	}
+
+	for _, p := range products {
+		if p.CategoryID == id {
+			return ErrCategoryHasProduct
+		}
+	}
+
+	return nil
 }

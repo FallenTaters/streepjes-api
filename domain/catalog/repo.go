@@ -22,17 +22,6 @@ func getCatalog() (Catalog, error) {
 	return catalog, nil
 }
 
-func addProduct(product Product) error {
-	product.ID = buckets.Products.NextSequence()
-	return buckets.Products.Create(buckets.Itob(product.ID), product)
-}
-
-func updateProduct(product Product) error {
-	return buckets.Products.Update(buckets.Itob(product.ID), &Product{}, func(ptr interface{}) (object interface{}, err error) {
-		return product, nil
-	})
-}
-
 func getCategories() ([]Category, error) {
 	categories := []Category{}
 	return categories, buckets.Categories.GetAll(&Category{}, func(ptr interface{}) error {
@@ -44,6 +33,21 @@ func getCategories() ([]Category, error) {
 func getCategory(id int) (Category, error) {
 	var category Category
 	return category, buckets.Categories.Get(buckets.Itob(id), &category)
+}
+
+func addCategory(category Category) error {
+	category.ID = buckets.Categories.NextSequence()
+	return buckets.Categories.Create(buckets.Itob(category.ID), category)
+}
+
+func updateCategory(category Category) error {
+	return buckets.Categories.Update(buckets.Itob(category.ID), &Category{}, func(ptr interface{}) (object interface{}, err error) {
+		return category, nil
+	})
+}
+
+func deleteCategory(id int) error {
+	return buckets.Categories.Delete(buckets.Itob(id))
 }
 
 func getProducts() ([]Product, error) {
@@ -59,13 +63,17 @@ func getProduct(id int) (Product, error) {
 	return product, buckets.Products.Get(buckets.Itob(id), &product)
 }
 
-func addCategory(category Category) error {
-	category.ID = buckets.Categories.NextSequence()
-	return buckets.Categories.Create(buckets.Itob(category.ID), category)
+func addProduct(product Product) error {
+	product.ID = buckets.Products.NextSequence()
+	return buckets.Products.Create(buckets.Itob(product.ID), product)
 }
 
-func updateCategory(category Category) error {
-	return buckets.Categories.Update(buckets.Itob(category.ID), &Category{}, func(ptr interface{}) (object interface{}, err error) {
-		return category, nil
+func updateProduct(product Product) error {
+	return buckets.Products.Update(buckets.Itob(product.ID), &Product{}, func(ptr interface{}) (object interface{}, err error) {
+		return product, nil
 	})
+}
+
+func deleteProduct(id int) error {
+	return buckets.Products.Delete(buckets.Itob(id))
 }

@@ -40,8 +40,10 @@ func main() {
 
 	ad := au.Group(`/`, roleMiddleware(users.RoleAdmin))
 	ad.GET(`/users`, getUsers)
-	ad.POST(`/product`, postProduct)
 	ad.POST(`/category`, postCategory)
+	ad.DELETE(`/category/:id`, deleteCategory)
+	ad.POST(`/product`, postProduct)
+	ad.DELETE(`/product/:id`, deleteProduct)
 
 	panic(r.Start(`:` + settings.Port))
 }
