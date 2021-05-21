@@ -6,14 +6,24 @@ import (
 
 const cacheTime = time.Minute
 
+var (
+	cacheValid  = false
+	lastCatalog struct {
+		Catalog
+		Time time.Time
+	}
+)
+
 func Get() (Catalog, error) {
-	if time.Since(lastCatalog.Time) > cacheTime {
+	if time.Since(lastCatalog.Time) > cacheTime || !cacheValid {
 		c, err := getCatalog()
 		if err != nil {
 			return Catalog{}, err
 		}
 		lastCatalog.Catalog = c
 		lastCatalog.Time = time.Now()
+
+		cacheValid = true
 	}
 
 	return lastCatalog.Catalog, nil
@@ -24,10 +34,10 @@ func PutProduct(product Product) error {
 		return err
 	}
 
-	return addProduct(product)
-}
+	cacheValid = false
 
-var lastCatalog struct {
-	Catalog
-	Time time.Time
+	if product.ID != 0 {
+		return updateProduct(product)
+	}
+	return addProduct(product)
 }

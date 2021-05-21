@@ -27,6 +27,12 @@ func addProduct(product Product) error {
 	return buckets.Products.Create(buckets.Itob(product.ID), product)
 }
 
+func updateProduct(product Product) error {
+	return buckets.Products.Update(buckets.Itob(product.ID), &Product{}, func(ptr interface{}) (object interface{}, err error) {
+		return product, nil
+	})
+}
+
 func getCategories() ([]Category, error) {
 	categories := []Category{}
 	return categories, buckets.Categories.GetAll(&Category{}, func(ptr interface{}) error {
