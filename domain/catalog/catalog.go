@@ -43,6 +43,7 @@ func PutProduct(product Product) error {
 }
 
 func DeleteProduct(id int) error {
+	cacheValid = false
 	return deleteProduct(id)
 }
 
