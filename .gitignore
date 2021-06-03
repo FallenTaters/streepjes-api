@@ -6,6 +6,7 @@ __debug_bin
 go.sum
 *_enumer.go
 bindata.go
+/vendor
 
 # environment, settings and passwords
 *.env
