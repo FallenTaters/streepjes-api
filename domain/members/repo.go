@@ -16,3 +16,22 @@ func getAll() ([]Member, error) {
 		return nil
 	})
 }
+
+func get(id int) (Member, error) {
+	var member Member
+	return member, buckets.Members.Get(buckets.Itob(id), &member)
+}
+
+func updateMember(member Member) error {
+	return buckets.Members.Update(buckets.Itob(member.ID), &Member{}, func(ptr interface{}) (object interface{}, err error) {
+		return member, nil
+	})
+}
+
+func addMember(member Member) error {
+	return buckets.Members.Create(buckets.Itob(buckets.Members.NextSequence()), member)
+}
+
+func deleteMember(id int) error {
+	return buckets.Members.Delete(buckets.Itob(id))
+}

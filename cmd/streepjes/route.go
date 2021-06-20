@@ -180,3 +180,30 @@ func postCategoryDelete(c *router.Context) error {
 
 	return c.StatusText(http.StatusOK)
 }
+
+func postMember(c *router.Context, member members.Member) error {
+	err := members.PutMember(member)
+	if err != nil {
+		return c.String(http.StatusBadRequest, err.Error())
+	}
+
+	return c.StatusText(http.StatusOK)
+}
+
+func postMemberDelete(c *router.Context) error {
+	id, err := strconv.Atoi(c.Param(`id`))
+	if err != nil {
+		return c.String(http.StatusBadRequest, err.Error())
+	}
+
+	if orders.MemberHasUnpaidOrders(id) {
+		return c.String(http.StatusBadRequest, members.ErrUnpaidOrders.Error())
+	}
+
+	err = members.DeleteMember(id)
+	if err != nil {
+		return c.String(http.StatusBadRequest, err.Error())
+	}
+
+	return c.StatusText(http.StatusOK)
+}

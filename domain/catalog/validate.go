@@ -48,14 +48,13 @@ func productNameExists(name string) bool {
 		panic(err)
 	}
 
-	found := false
 	for _, p := range products {
 		if p.Name == name {
-			found = true
+			return true
 		}
 	}
 
-	return found
+	return false
 }
 
 func categoryExists(id int) bool {
@@ -64,15 +63,13 @@ func categoryExists(id int) bool {
 		panic(err)
 	}
 
-	found := false
 	for _, c := range categories {
 		if c.ID == id {
-			found = true
-			break
+			return true
 		}
 	}
 
-	return found
+	return false
 }
 
 func validateCategory(category Category) error {
@@ -103,14 +100,13 @@ func categoryNameExists(name string) bool {
 		panic(err)
 	}
 
-	found := false
 	for _, c := range categories {
 		if c.Name == name {
-			found = true
+			return true
 		}
 	}
 
-	return found
+	return false
 }
 
 func validateDeleteCategory(id int) error {

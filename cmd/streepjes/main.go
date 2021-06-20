@@ -44,6 +44,8 @@ func main() {
 	ad.POST(`/category/delete/:id`, postCategoryDelete)
 	ad.POST(`/product`, postProduct)
 	ad.POST(`/product/delete/:id`, postProductDelete)
+	ad.POST(`/member`, postMember)
+	ad.POST(`/member/delete/:id`, postMemberDelete)
 
 	panic(r.Start(`:` + settings.Port))
 }

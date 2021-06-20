@@ -1,6 +1,9 @@
 package orders
 
-import "github.com/PotatoesFall/streepjes/domain/users"
+import (
+	"github.com/PotatoesFall/streepjes/domain/users"
+	"github.com/PotatoesFall/streepjes/shared/null"
+)
 
 func Get(id int) (Order, error) {
 	return get(id)
@@ -51,4 +54,21 @@ func HasPermissions(id int, user users.User) (bool, error) {
 	}
 
 	return false, users.ErrUserNotFound
+}
+
+func MemberHasUnpaidOrders(id int) bool {
+	orders, err := Filter(OrderFilter{
+		Member: null.NewInt(id),
+	})
+	if err != nil {
+		panic(err)
+	}
+
+	for _, o := range orders {
+		if o.Status == OrderStatusOpen {
+			return true
+		}
+	}
+
+	return false
 }
