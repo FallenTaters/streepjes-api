@@ -65,5 +65,7 @@ func DeleteCategory(id int) error {
 		return err
 	}
 
+	cacheValid = false
+
 	return deleteCategory(id)
 }
