@@ -8,6 +8,9 @@ go.sum
 bindata.go
 /vendor
 
+# air
+/air
+
 # environment, settings and passwords
 *.env
 

@@ -1,11 +1,11 @@
 # https://github.com/cosmtrek/air
 # Install with command: curl -sSfL https://raw.githubusercontent.com/cosmtrek/air/master/install.sh | sh -s -- -b $(go env GOPATH)/bin
 root = "."
-tmp_dir = "tmp"
+tmp_dir = "air"
 
 [build]
-  bin = "./bin/streepjes"
-  cmd = "go build -o ./bin/streepjes ./cmd/streepjes"
+  bin = "./air/streepjes"
+  cmd = "go build -o ./air/streepjes ./cmd/streepjes"
   delay = 1000
   exclude_dir = ["assets", "tmp", "vendor"]
   exclude_file = []
