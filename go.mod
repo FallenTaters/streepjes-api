@@ -1,6 +1,6 @@
 module github.com/PotatoesFall/streepjes
 
-go 1.15
+go 1.16
 
 require (
 	git.fuyu.moe/Fuyu/router v0.2.0
