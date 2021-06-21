@@ -1,7 +1,7 @@
 package members
 
 func GetAll() ([]Member, error) {
-	return getAll()
+	return repo.getAll()
 }
 
 func PutMember(member Member) error {
@@ -10,11 +10,11 @@ func PutMember(member Member) error {
 	}
 
 	if member.ID != 0 {
-		return updateMember(member)
+		return repo.updateMember(member)
 	}
-	return addMember(member)
+	return repo.addMember(member)
 }
 
 func DeleteMember(id int) error {
-	return deleteMember(id)
+	return repo.deleteMember(id)
 }

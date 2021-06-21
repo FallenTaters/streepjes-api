@@ -6,9 +6,21 @@ import (
 	"github.com/PotatoesFall/streepjes/shared/buckets"
 )
 
+var repo memberRepo = defaultRepo{}
+
+type defaultRepo struct{}
+
+type memberRepo interface {
+	getAll() ([]Member, error)
+	get(id int) (Member, error)
+	updateMember(member Member) error
+	addMember(member Member) error
+	deleteMember(id int) error
+}
+
 var ErrMemberNotFound = errors.New("member not found")
 
-func getAll() ([]Member, error) {
+func (defaultRepo) getAll() ([]Member, error) {
 	members := []Member{}
 
 	return members, buckets.Members.GetAll(&Member{}, func(ptr interface{}) error {
@@ -17,21 +29,21 @@ func getAll() ([]Member, error) {
 	})
 }
 
-func get(id int) (Member, error) {
+func (defaultRepo) get(id int) (Member, error) {
 	var member Member
 	return member, buckets.Members.Get(buckets.Itob(id), &member)
 }
 
-func updateMember(member Member) error {
+func (defaultRepo) updateMember(member Member) error {
 	return buckets.Members.Update(buckets.Itob(member.ID), &Member{}, func(ptr interface{}) (object interface{}, err error) {
 		return member, nil
 	})
 }
 
-func addMember(member Member) error {
+func (defaultRepo) addMember(member Member) error {
 	return buckets.Members.Create(buckets.Itob(buckets.Members.NextSequence()), member)
 }
 
-func deleteMember(id int) error {
+func (defaultRepo) deleteMember(id int) error {
 	return buckets.Members.Delete(buckets.Itob(id))
 }

@@ -15,7 +15,7 @@ var (
 )
 
 func validateMember(member Member) error {
-	original, err := get(member.ID)
+	original, err := repo.get(member.ID)
 	switch err {
 	case nil:
 		if (original.Name != member.Name || original.Club != member.Club) && memberClubExists(member) {
@@ -41,7 +41,7 @@ func validateMember(member Member) error {
 }
 
 func memberClubExists(member Member) bool {
-	members, err := getAll()
+	members, err := repo.getAll()
 	if err != nil {
 		panic(err)
 	}
