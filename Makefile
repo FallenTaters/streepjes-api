@@ -15,3 +15,6 @@ newtestdb:
 
 run:
 	go run ./cmd/streepjes/
+
+test:
+	go test ./...

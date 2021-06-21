@@ -22,6 +22,9 @@ func validateMember(member Member) error {
 			return ErrNameTaken
 		}
 	case bbucket.ErrObjectNotFound:
+		if member.ID != 0 {
+			return ErrMemberNotFound
+		}
 		if memberClubExists(member) {
 			return ErrNameTaken
 		}

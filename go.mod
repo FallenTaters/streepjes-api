@@ -3,6 +3,7 @@ module github.com/PotatoesFall/streepjes
 go 1.16
 
 require (
+	git.fuyu.moe/Fuyu/assert v0.2.1
 	git.fuyu.moe/Fuyu/router v0.2.0
 	github.com/PotatoesFall/bbucket v0.0.2
 	github.com/julienschmidt/httprouter v1.3.0 // indirect
