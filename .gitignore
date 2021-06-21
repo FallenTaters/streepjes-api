@@ -3,7 +3,6 @@
 __debug_bin
 
 # go
-go.sum
 *_enumer.go
 bindata.go
 /vendor
