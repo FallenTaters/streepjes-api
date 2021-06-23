@@ -35,8 +35,14 @@ func (defaultRepo) get(id int) (Member, error) {
 }
 
 func (defaultRepo) updateMember(member Member) error {
-	return buckets.Members.Update(buckets.Itob(member.ID), &Member{}, func(ptr interface{}) (object interface{}, err error) {
-		return member, nil
+	var m Member
+	return buckets.Members.Update(buckets.Itob(member.ID), &m, func(ptr interface{}) (object interface{}, err error) {
+		return Member{
+			ID:   m.ID,
+			Club: member.Club,
+			Name: member.Name,
+			Debt: m.Debt,
+		}, nil
 	})
 }
 
