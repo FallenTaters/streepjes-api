@@ -1,14 +1,7 @@
 package users
 
 import (
-	"errors"
-
 	"github.com/PotatoesFall/streepjes/shared/buckets"
-)
-
-var (
-	ErrUserNotFound      = errors.New("user not found")
-	ErrUserAlreadyExists = errors.New("user already exists")
 )
 
 func getAll() ([]User, error) {

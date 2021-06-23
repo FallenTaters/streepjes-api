@@ -1,17 +1,11 @@
 package orders
 
 import (
-	"errors"
 	"time"
 
 	"github.com/PotatoesFall/bbucket"
 	"github.com/PotatoesFall/streepjes/domain/members"
 	"github.com/PotatoesFall/streepjes/shared/buckets"
-)
-
-var (
-	ErrOrderNotFound      = errors.New("order not found")
-	ErrOrderAlreadyExists = errors.New("order already exists")
 )
 
 func get(id int) (Order, error) {

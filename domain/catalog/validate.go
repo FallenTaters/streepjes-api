@@ -12,6 +12,7 @@ var (
 	ErrEmptyName          = errors.New("name may not be empty")
 	ErrNoPrice            = errors.New("product must have at least one price")
 	ErrCategoryHasProduct = errors.New("category still has products")
+	ErrProductNotFound    = errors.New("product not found")
 )
 
 func validateProduct(product Product) error {
@@ -22,6 +23,9 @@ func validateProduct(product Product) error {
 			return ErrNameTaken
 		}
 	case bbucket.ErrObjectNotFound:
+		if product.ID != 0 {
+			return ErrProductNotFound
+		}
 		if productNameExists(product.Name) {
 			return ErrNameTaken
 		}
@@ -80,6 +84,9 @@ func validateCategory(category Category) error {
 			return ErrNameTaken
 		}
 	case bbucket.ErrObjectNotFound:
+		if category.ID != 0 {
+			return ErrCategoryNotFound
+		}
 		if categoryNameExists(category.Name) {
 			return ErrNameTaken
 		}

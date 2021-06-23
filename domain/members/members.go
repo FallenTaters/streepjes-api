@@ -4,7 +4,7 @@ func GetAll() ([]Member, error) {
 	return repo.getAll()
 }
 
-func PutMember(member Member) error {
+func Put(member Member) error {
 	if err := validateMember(member); err != nil {
 		return err
 	}
@@ -15,6 +15,6 @@ func PutMember(member Member) error {
 	return repo.addMember(member)
 }
 
-func DeleteMember(id int) error {
+func ForceDelete(id int) error {
 	return repo.deleteMember(id)
 }

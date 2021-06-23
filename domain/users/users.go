@@ -1,6 +1,7 @@
 package users
 
 import (
+	"errors"
 	"net/http"
 	"time"
 
@@ -13,12 +14,18 @@ const (
 	loginTime   = 5 * time.Minute
 )
 
+var (
+	ErrUserNotFound      = errors.New("user not found")
+	ErrUserAlreadyExists = errors.New("user already exists")
+	ErrInvalidLogin      = errors.New("invalid username or password")
+)
+
 func LogIn(w http.ResponseWriter, c Credentials) (User, error) {
 	var u User
 	return u, update(c.Username, func(user User) (User, error) {
 		err := bcrypt.CompareHashAndPassword(user.Password, []byte(c.Password))
 		if err != nil {
-			return User{}, err
+			return User{}, ErrInvalidLogin
 		}
 
 		user.AuthToken = shared.GenerateToken(tokenLength)

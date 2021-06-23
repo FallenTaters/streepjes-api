@@ -10,9 +10,9 @@ import (
 	"github.com/PotatoesFall/streepjes/domain/catalog"
 	"github.com/PotatoesFall/streepjes/domain/members"
 	"github.com/PotatoesFall/streepjes/domain/orders"
+	"github.com/PotatoesFall/streepjes/domain/streepjes"
 	"github.com/PotatoesFall/streepjes/domain/users"
 	"github.com/PotatoesFall/streepjes/shared"
-	"github.com/PotatoesFall/streepjes/shared/null"
 )
 
 func postActive(c *router.Context) error {
@@ -20,31 +20,36 @@ func postActive(c *router.Context) error {
 }
 
 func getClub(c *router.Context) error {
-	user := c.Get("user").(users.User)
-	return c.JSON(http.StatusOK, user.Club)
+	return c.JSON(http.StatusOK, getUserFromContext(c).Club)
 }
 
 func postLogin(c *router.Context, credentials users.Credentials) error {
 	user, err := users.LogIn(c.Response, credentials)
-	if err != nil || user.Role == users.RoleNotAuthorized {
-		return c.String(http.StatusUnauthorized, `invalid username or password`)
+	switch {
+	case err == users.ErrInvalidLogin || user.Role == users.RoleNotAuthorized:
+		return c.StatusText(http.StatusUnauthorized)
+
+	case err != nil:
+		panic(err)
 	}
 
 	cookieValue, err := json.Marshal(authCookie{Username: user.Username, AuthToken: user.AuthToken})
 	if err != nil {
 		panic(err)
 	}
-
 	shared.SetCookie(c.Response, authCookieName, cookieValue, authCookieDuration)
+
 	return c.JSON(http.StatusOK, user.Role)
 }
 
 func postLogout(c *router.Context) error {
 	shared.UnsetCookie(c.Response, authCookieName)
+
 	err := users.LogOut(getUserFromContext(c))
 	if err != nil {
 		panic(err)
 	}
+
 	return c.NoContent(http.StatusOK)
 }
 
@@ -53,6 +58,7 @@ func getCatalog(c *router.Context) error {
 	if err != nil {
 		panic(err)
 	}
+
 	return c.JSON(http.StatusOK, cat)
 }
 
@@ -66,47 +72,35 @@ func getMembers(c *router.Context) error {
 }
 
 func postOrder(c *router.Context, order orders.Order) error {
-	order.Bartender = getUserFromContext(c).Username
-	if order.Status != orders.OrderStatusOpen && order.Status != orders.OrderStatusPaid {
-		return c.String(http.StatusBadRequest, `Status must be "Open" or "Paid".`)
+	err := orders.Add(order, getUserFromContext(c))
+	switch err {
+	case nil:
+		return c.NoContent(http.StatusOK)
 	}
 
-	err := orders.AddOrder(order)
-	if err != nil {
-		panic(err)
-	}
-
-	return c.NoContent(http.StatusOK)
+	panic(err)
 }
 
 func getUsers(c *router.Context) error {
-	users, err := users.GetAll()
+	u, err := users.GetAll()
 	if err != nil {
 		panic(err)
 	}
 
-	return c.JSON(http.StatusOK, users)
+	return c.JSON(http.StatusOK, u)
 }
 
 func getOrders(c *router.Context) error {
-	user := getUserFromContext(c)
-	filter := orders.OrderFilter{}
+	o, err := orders.GetForUser(getUserFromContext(c))
+	switch err {
+	case nil:
+		return c.JSON(http.StatusOK, o)
 
-	switch user.Role {
-	case users.RoleAdmin:
-		filter.Club = null.NewInt(user.Club.Int())
-	case users.RoleBartender:
-		filter.Bartender = null.NewString(user.Username)
-	default:
-		return c.StatusText(http.StatusUnauthorized)
+	case orders.ErrNoPermission:
+		return c.String(http.StatusBadRequest, err.Error())
 	}
 
-	orders, err := orders.Filter(filter)
-	if err != nil {
-		panic(err)
-	}
-
-	return c.JSON(http.StatusOK, orders)
+	panic(err)
 }
 
 func postOrderDelete(c *router.Context) error {
@@ -115,95 +109,104 @@ func postOrderDelete(c *router.Context) error {
 		return c.StatusText(http.StatusBadRequest)
 	}
 
-	allowed, err := orders.HasPermissions(id, c.Get("user").(users.User))
-	switch {
-	case err == nil && allowed:
-		err = orders.Delete(id)
-		if err != nil {
-			panic(err)
-		}
+	err = orders.Delete(id, getUserFromContext(c))
+	switch err {
+	case nil:
 		return c.StatusText(http.StatusOK)
 
-	case err == nil && !allowed:
-		return c.StatusText(http.StatusUnauthorized)
-
-	case err == bbucket.ErrObjectNotFound:
-		return c.StatusText(http.StatusNotFound)
-
-	default:
-		panic(err)
+	case orders.ErrNoPermission, orders.ErrOrderNotFound:
+		return c.String(http.StatusBadRequest, err.Error())
 	}
+
+	panic(err)
 }
 
 func postProduct(c *router.Context, product catalog.Product) error {
 	err := catalog.PutProduct(product)
-	if err != nil {
+	switch err {
+	case nil:
+		return c.StatusText(http.StatusOK)
+
+	case catalog.ErrEmptyName, catalog.ErrNoPrice, catalog.ErrCategoryNotFound, catalog.ErrNameTaken, catalog.ErrProductNotFound:
 		return c.String(http.StatusBadRequest, err.Error())
 	}
 
-	return c.StatusText(http.StatusOK)
+	panic(err)
 }
 
 func postCategory(c *router.Context, category catalog.Category) error {
 	err := catalog.PutCategory(category)
-	if err != nil {
+	switch err {
+	case nil:
+		return c.StatusText(http.StatusOK)
+
+	case catalog.ErrEmptyName, catalog.ErrNameTaken:
 		return c.String(http.StatusBadRequest, err.Error())
 	}
 
-	return c.StatusText(http.StatusOK)
+	panic(err)
 }
 
 func postProductDelete(c *router.Context) error {
 	id, err := strconv.Atoi(c.Param(`id`))
 	if err != nil {
-		return c.String(http.StatusBadRequest, err.Error())
+		return c.StatusText(http.StatusUnprocessableEntity)
 	}
 
 	err = catalog.DeleteProduct(id)
-	if err != nil {
-		return c.String(http.StatusBadRequest, err.Error())
+	switch err {
+	case nil:
+		return c.StatusText(http.StatusOK)
+
+	case bbucket.ErrObjectNotFound:
+		return c.StatusText(http.StatusNotFound)
 	}
 
-	return c.StatusText(http.StatusOK)
+	panic(err)
 }
 
 func postCategoryDelete(c *router.Context) error {
 	id, err := strconv.Atoi(c.Param(`id`))
 	if err != nil {
-		return c.String(http.StatusBadRequest, err.Error())
+		return c.StatusText(http.StatusUnprocessableEntity)
 	}
 
 	err = catalog.DeleteCategory(id)
-	if err != nil {
+	switch err {
+	case nil:
+		return c.StatusText(http.StatusOK)
+	case catalog.ErrCategoryHasProduct, catalog.ErrCategoryNotFound:
 		return c.String(http.StatusBadRequest, err.Error())
 	}
 
-	return c.StatusText(http.StatusOK)
+	panic(err)
 }
 
 func postMember(c *router.Context, member members.Member) error {
-	err := members.PutMember(member)
-	if err != nil {
+	err := members.Put(member)
+	switch err {
+	case nil:
+		return c.StatusText(http.StatusOK)
+	case members.ErrEmptyName, members.ErrNameTaken, members.ErrUnknownClub, members.ErrMemberNotFound:
 		return c.String(http.StatusBadRequest, err.Error())
 	}
 
-	return c.StatusText(http.StatusOK)
+	panic(err)
 }
 
 func postMemberDelete(c *router.Context) error {
 	id, err := strconv.Atoi(c.Param(`id`))
 	if err != nil {
+		return c.StatusText(http.StatusUnprocessableEntity)
+	}
+
+	err = streepjes.DeleteMember(id)
+	switch err {
+	case nil:
+		return c.StatusText(http.StatusOK)
+	case members.ErrUnpaidOrders, members.ErrMemberNotFound:
 		return c.String(http.StatusBadRequest, err.Error())
 	}
 
-	if orders.MemberHasUnpaidOrders(id) {
-		return c.String(http.StatusBadRequest, members.ErrUnpaidOrders.Error())
-	}
-
-	err = members.DeleteMember(id)
-	if err != nil {
-		return c.String(http.StatusBadRequest, err.Error())
-	}
-
-	return c.StatusText(http.StatusOK)
+	panic(err)
 }

@@ -1,15 +1,30 @@
 package orders
 
 import (
+	"errors"
+
+	"github.com/PotatoesFall/bbucket"
 	"github.com/PotatoesFall/streepjes/domain/users"
 	"github.com/PotatoesFall/streepjes/shared/null"
+)
+
+var (
+	ErrOrderNotFound       = errors.New("order not found")
+	ErrOrderAlreadyExists  = errors.New("order already exists")
+	ErrNoPermission        = errors.New("user not permitted to modify this order")
+	ErrStatusNotOpenOrPaid = errors.New("order status must be open or paid")
 )
 
 func Get(id int) (Order, error) {
 	return get(id)
 }
 
-func AddOrder(order Order) error {
+func Add(order Order, user users.User) error {
+	order.Bartender = user.Username
+	if order.Status != OrderStatusOpen && order.Status != OrderStatusPaid {
+		return ErrStatusNotOpenOrPaid
+	}
+
 	return create(order)
 }
 
@@ -35,8 +50,21 @@ func Filter(filter OrderFilter) ([]Order, error) {
 	})
 }
 
-func Delete(id int) error {
-	return deleteByID(id)
+func Delete(id int, user users.User) error {
+	allowed, err := HasPermissions(id, user)
+	switch {
+	case err == nil && allowed:
+		return deleteByID(id)
+
+	case err == nil && !allowed:
+		return ErrNoPermission
+
+	case err == bbucket.ErrObjectNotFound:
+		return ErrOrderNotFound
+
+	default:
+		panic(err)
+	}
 }
 
 func HasPermissions(id int, user users.User) (bool, error) {
@@ -71,4 +99,21 @@ func MemberHasUnpaidOrders(id int) bool {
 	}
 
 	return false
+}
+
+func GetForUser(user users.User) ([]Order, error) {
+	filter := OrderFilter{}
+
+	switch user.Role {
+	case users.RoleAdmin:
+		filter.Club = null.NewInt(user.Club.Int())
+
+	case users.RoleBartender:
+		filter.Bartender = null.NewString(user.Username)
+
+	default:
+		return nil, ErrNoPermission
+	}
+
+	return Filter(filter)
 }
