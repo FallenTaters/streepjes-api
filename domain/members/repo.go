@@ -36,7 +36,7 @@ func (defaultRepo) get(id int) (Member, error) {
 
 func (defaultRepo) updateMember(member Member) error {
 	var m Member
-	return buckets.Members.Update(buckets.Itob(member.ID), &m, func(ptr interface{}) (object interface{}, err error) {
+	return buckets.Members.Update(member.Key(), &m, func(ptr interface{}) (object interface{}, err error) {
 		return Member{
 			ID:   m.ID,
 			Club: member.Club,
@@ -47,7 +47,8 @@ func (defaultRepo) updateMember(member Member) error {
 }
 
 func (defaultRepo) addMember(member Member) error {
-	return buckets.Members.Create(buckets.Itob(buckets.Members.NextSequence()), member)
+	member.ID = buckets.Members.NextSequence()
+	return buckets.Members.Create(member.Key(), member)
 }
 
 func (defaultRepo) deleteMember(id int) error {

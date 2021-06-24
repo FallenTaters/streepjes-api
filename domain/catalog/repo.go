@@ -37,11 +37,11 @@ func getCategory(id int) (Category, error) {
 
 func addCategory(category Category) error {
 	category.ID = buckets.Categories.NextSequence()
-	return buckets.Categories.Create(buckets.Itob(category.ID), category)
+	return buckets.Categories.Create(category.Key(), category)
 }
 
 func updateCategory(category Category) error {
-	return buckets.Categories.Update(buckets.Itob(category.ID), &Category{}, func(ptr interface{}) (object interface{}, err error) {
+	return buckets.Categories.Update(category.Key(), &Category{}, func(ptr interface{}) (object interface{}, err error) {
 		return category, nil
 	})
 }
@@ -65,11 +65,11 @@ func getProduct(id int) (Product, error) {
 
 func addProduct(product Product) error {
 	product.ID = buckets.Products.NextSequence()
-	return buckets.Products.Create(buckets.Itob(product.ID), product)
+	return buckets.Products.Create(product.Key(), product)
 }
 
 func updateProduct(product Product) error {
-	return buckets.Products.Update(buckets.Itob(product.ID), &Product{}, func(ptr interface{}) (object interface{}, err error) {
+	return buckets.Products.Update(product.Key(), &Product{}, func(ptr interface{}) (object interface{}, err error) {
 		return product, nil
 	})
 }
