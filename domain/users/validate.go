@@ -3,6 +3,7 @@ package users
 import (
 	"errors"
 
+	"github.com/PotatoesFall/bbucket"
 	"github.com/PotatoesFall/streepjes/shared"
 )
 
@@ -30,12 +31,12 @@ func validatePutUser(u User) (User, error) {
 			return User{}, ErrCannotChangeClub
 		}
 
-	case ErrUserNotFound:
+	case bbucket.ErrObjectNotFound:
 	default:
 		panic(err)
 	}
 
-	if user.Club == shared.ClubUnknown {
+	if user.Club == shared.ClubUnknown && user.Role != RoleBartender {
 		return User{}, ErrClubUnknown
 	}
 

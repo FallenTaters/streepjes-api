@@ -97,8 +97,8 @@ func GetAll() ([]UserPayload, error) {
 	}
 
 	payloads := make([]UserPayload, len(users))
-	for _, user := range users {
-		payloads = append(payloads, user.AsPayload())
+	for i, user := range users {
+		payloads[i] = user.AsPayload()
 	}
 
 	return payloads, nil
