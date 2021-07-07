@@ -117,3 +117,20 @@ func GetForUser(user users.User) ([]Order, error) {
 
 	return Filter(filter)
 }
+
+func UserHasOpenOrders(username string) bool {
+	orders, err := Filter(OrderFilter{
+		Bartender: null.NewString(username),
+	})
+	if err != nil {
+		panic(err)
+	}
+
+	for _, o := range orders {
+		if o.Status == OrderStatusOpen {
+			return true
+		}
+	}
+
+	return false
+}

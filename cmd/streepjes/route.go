@@ -178,6 +178,7 @@ func postCategoryDelete(c *router.Context) error {
 	switch err {
 	case nil:
 		return c.StatusText(http.StatusOK)
+
 	case catalog.ErrCategoryHasProduct, catalog.ErrCategoryNotFound:
 		return c.String(http.StatusBadRequest, err.Error())
 	}
@@ -190,6 +191,7 @@ func postMember(c *router.Context, member members.Member) error {
 	switch err {
 	case nil:
 		return c.StatusText(http.StatusOK)
+
 	case members.ErrEmptyName, members.ErrNameTaken, members.ErrUnknownClub, members.ErrMemberNotFound:
 		return c.String(http.StatusBadRequest, err.Error())
 	}
@@ -207,7 +209,35 @@ func postMemberDelete(c *router.Context) error {
 	switch err {
 	case nil:
 		return c.StatusText(http.StatusOK)
+
 	case members.ErrUnpaidOrders, members.ErrMemberNotFound:
+		return c.String(http.StatusBadRequest, err.Error())
+	}
+
+	panic(err)
+}
+
+func postUser(c *router.Context, user users.User) error {
+	err := users.Put(user)
+	switch err {
+	case nil:
+		return c.StatusText(http.StatusOK)
+
+	case users.ErrClubUnknown, users.ErrNotAuthorized, users.ErrEmptyPassword, users.ErrCannotChangeClub:
+		return c.String(http.StatusBadRequest, err.Error())
+	}
+
+	panic(err)
+}
+
+func postUserDelete(c *router.Context) error {
+	username := c.Param(`username`)
+	err := streepjes.DeleteUser(username)
+	switch err {
+	case nil:
+		return c.StatusText(http.StatusOK)
+
+	case users.ErrUserHasOpenOrders, users.ErrUserNotFound:
 		return c.String(http.StatusBadRequest, err.Error())
 	}
 

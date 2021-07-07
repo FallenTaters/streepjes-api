@@ -38,7 +38,7 @@ func deleteData() {
 
 func insertUsers() {
 	for _, u := range testUsers {
-		err := users.Insert(u)
+		err := users.Put(u)
 		if err != nil {
 			panic(err)
 		}

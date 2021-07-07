@@ -63,15 +63,22 @@ func ValidateToken(username, token string) (User, bool) {
 	return user, true
 }
 
-func Insert(user User) error {
-	hash, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+func Put(user User) error {
+	user, err := validatePutUser(user)
 	if err != nil {
 		return err
 	}
 
-	user.Password = hash
-
 	return create(user)
+}
+
+func Delete(username string) error {
+	err := validateDeleteUser(username)
+	if err != nil {
+		return err
+	}
+
+	return delete(username)
 }
 
 func MustGetByUsername(username string) User {
@@ -83,8 +90,18 @@ func MustGetByUsername(username string) User {
 	return user
 }
 
-func GetAll() ([]User, error) {
-	return getAll()
+func GetAll() ([]UserPayload, error) {
+	users, err := getAll()
+	if err != nil {
+		return nil, err
+	}
+
+	payloads := make([]UserPayload, len(users))
+	for _, user := range users {
+		payloads = append(payloads, user.AsPayload())
+	}
+
+	return payloads, nil
 }
 
 func Get(username string) (User, error) {
