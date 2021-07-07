@@ -9,10 +9,9 @@ import (
 )
 
 var (
-	ErrOrderNotFound       = errors.New("order not found")
-	ErrOrderAlreadyExists  = errors.New("order already exists")
-	ErrNoPermission        = errors.New("user not permitted to modify this order")
-	ErrStatusNotOpenOrPaid = errors.New("order status must be open or paid")
+	ErrOrderNotFound      = errors.New("order not found")
+	ErrOrderAlreadyExists = errors.New("order already exists")
+	ErrNoPermission       = errors.New("user not permitted to modify this order")
 )
 
 func Get(id int) (Order, error) {
@@ -21,8 +20,9 @@ func Get(id int) (Order, error) {
 
 func Add(order Order, user users.User) error {
 	order.Bartender = user.Username
-	if order.Status != OrderStatusOpen && order.Status != OrderStatusPaid {
-		return ErrStatusNotOpenOrPaid
+
+	if err := validateAddOrder(order); err != nil {
+		return err
 	}
 
 	return create(order)

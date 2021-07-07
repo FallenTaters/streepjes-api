@@ -76,6 +76,9 @@ func postOrder(c *router.Context, order orders.Order) error {
 	switch err {
 	case nil:
 		return c.NoContent(http.StatusOK)
+
+	case users.ErrUserNotFound, members.ErrMemberNotFound, orders.ErrStatusNotOpenOrPaid, orders.ErrUnknownClub, orders.ErrNoContents:
+		return c.String(http.StatusBadRequest, err.Error())
 	}
 
 	panic(err)

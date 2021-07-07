@@ -4,6 +4,10 @@ func GetAll() ([]Member, error) {
 	return repo.getAll()
 }
 
+func Get(id int) (Member, error) {
+	return repo.get(id)
+}
+
 func Put(member Member) error {
 	if err := validateMember(member); err != nil {
 		return err

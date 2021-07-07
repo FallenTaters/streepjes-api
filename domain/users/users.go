@@ -86,3 +86,7 @@ func MustGetByUsername(username string) User {
 func GetAll() ([]User, error) {
 	return getAll()
 }
+
+func Get(username string) (User, error) {
+	return get(username)
+}
