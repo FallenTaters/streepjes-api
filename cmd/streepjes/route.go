@@ -218,6 +218,10 @@ func postMemberDelete(c *router.Context) error {
 }
 
 func postUser(c *router.Context, user users.User) error {
+	if user.Username == getUserFromContext(c).Username {
+		return c.String(http.StatusBadRequest, users.ErrCannotChangeOwnAccount.Error())
+	}
+
 	err := users.Put(user)
 	switch err {
 	case nil:

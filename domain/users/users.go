@@ -69,6 +69,12 @@ func Put(user User) error {
 		return err
 	}
 
+	if user.Password == nil {
+		return update(user.Username, func(u User) (User, error) {
+			return user, nil
+		})
+	}
+
 	return create(user)
 }
 

@@ -8,11 +8,12 @@ import (
 )
 
 var (
-	ErrClubUnknown       = errors.New(`club unkown`)
-	ErrNotAuthorized     = errors.New(`not authorized`)
-	ErrEmptyPassword     = errors.New(`empty password`)
-	ErrCannotChangeClub  = errors.New(`cannot change club`)
-	ErrUserHasOpenOrders = errors.New(`cannot delete user with open orders`)
+	ErrClubUnknown            = errors.New(`club unkown`)
+	ErrNotAuthorized          = errors.New(`not authorized`)
+	ErrEmptyPassword          = errors.New(`empty password`)
+	ErrCannotChangeClub       = errors.New(`cannot change club`)
+	ErrUserHasOpenOrders      = errors.New(`cannot delete user with open orders`)
+	ErrCannotChangeOwnAccount = errors.New(`cannot change your own account`)
 )
 
 func validatePutUser(u User) (User, error) {
@@ -21,17 +22,24 @@ func validatePutUser(u User) (User, error) {
 		Club:     u.Club,
 		Name:     u.Name,
 		Role:     u.Role,
-		Password: u.Password,
 	}
 
 	original, err := get(u.Username)
 	switch err {
 	case nil:
-		if u.Club != original.Club {
+		if u.Club != original.Club && original.Club != shared.ClubUnknown {
 			return User{}, ErrCannotChangeClub
 		}
 
+		user.Password = nil
+
 	case bbucket.ErrObjectNotFound:
+		if len(u.Password) == 0 {
+			return User{}, ErrEmptyPassword
+		}
+
+		user.Password = u.Password
+
 	default:
 		panic(err)
 	}
@@ -42,10 +50,6 @@ func validatePutUser(u User) (User, error) {
 
 	if user.Role == RoleNotAuthorized {
 		return User{}, ErrNotAuthorized
-	}
-
-	if len(user.Password) == 0 {
-		return User{}, ErrEmptyPassword
 	}
 
 	return user, nil
