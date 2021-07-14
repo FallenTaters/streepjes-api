@@ -39,5 +39,6 @@ type OrderFilter struct {
 	Club      null.Int
 	Bartender null.String
 	Member    null.Int
-	Status    null.Int
+	Status    []int
+	Month     *time.Time
 }

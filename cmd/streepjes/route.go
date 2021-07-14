@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"strconv"
+	"time"
 
 	"git.fuyu.moe/Fuyu/router"
 	"github.com/PotatoesFall/bbucket"
@@ -13,6 +14,7 @@ import (
 	"github.com/PotatoesFall/streepjes/domain/streepjes"
 	"github.com/PotatoesFall/streepjes/domain/users"
 	"github.com/PotatoesFall/streepjes/shared"
+	"github.com/PotatoesFall/streepjes/shared/null"
 )
 
 func postActive(c *router.Context) error {
@@ -250,4 +252,23 @@ func postUserDelete(c *router.Context) error {
 	}
 
 	panic(err)
+}
+
+func getOrdersByMonth(c *router.Context) error {
+	year, errYear := strconv.Atoi(c.Param(`year`))
+	month, errMonth := strconv.Atoi(c.Param(`month`))
+	if errYear != nil || errMonth != nil {
+		return c.NoContent(http.StatusBadRequest)
+	}
+
+	date := time.Date(year, time.Month(month), 1, 0, 0, 0, 0, time.Local)
+	orders, err := orders.Filter(orders.OrderFilter{
+		Month: &date,
+		Club:  null.NewInt(getUserFromContext(c).Club.Int()),
+	})
+	if err != nil {
+		panic(err)
+	}
+
+	return c.JSON(http.StatusOK, orders)
 }

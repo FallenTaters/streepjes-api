@@ -27,7 +27,7 @@ func filtered(filterFunc func(Order) bool) ([]Order, error) {
 
 func create(o Order) error {
 	o.ID = buckets.Orders.NextSequence()
-	o.OrderTime = time.Now()
+	o.OrderTime = time.Now().Local()
 	o.StatusTime = o.OrderTime
 
 	err := buckets.Orders.Create(o.Key(), o)

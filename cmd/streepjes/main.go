@@ -51,6 +51,8 @@ func main() {
 	ad.POST(`/product`, postProduct)
 	ad.POST(`/product/delete/:id`, postProductDelete)
 
+	ad.GET(`/orders/:year/:month`, getOrdersByMonth)
+
 	panic(r.Start(`:` + settings.Port))
 }
 

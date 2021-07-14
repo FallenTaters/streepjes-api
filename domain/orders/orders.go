@@ -2,6 +2,7 @@ package orders
 
 import (
 	"errors"
+	"time"
 
 	"github.com/PotatoesFall/bbucket"
 	"github.com/PotatoesFall/streepjes/domain/users"
@@ -42,12 +43,26 @@ func Filter(filter OrderFilter) ([]Order, error) {
 			return false
 		}
 
-		if filter.Status.Valid && filter.Status.Int64 != int64(o.Status) {
+		if filter.Month != nil && !sameMonthAndYear(*filter.Month, o.OrderTime) {
 			return false
 		}
 
-		return true
+		if len(filter.Status) == 0 {
+			return true
+		}
+
+		for _, status := range filter.Status {
+			if int(o.Status) == status {
+				return true
+			}
+		}
+
+		return false
 	})
+}
+
+func sameMonthAndYear(t1 time.Time, t2 time.Time) bool {
+	return t1.Month() == t2.Month() && t1.Year() == t2.Year()
 }
 
 func Delete(id int, user users.User) error {
