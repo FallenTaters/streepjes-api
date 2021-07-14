@@ -28,14 +28,16 @@ func validateAddOrder(o Order) error {
 	}
 
 	// check if member exists
-	_, err = members.Get(o.MemberID)
-	switch err {
-	case nil:
-	case members.ErrMemberNotFound:
-		return err
+	if o.MemberID != 0 {
+		_, err = members.Get(o.MemberID)
+		switch err {
+		case nil:
+		case members.ErrMemberNotFound:
+			return err
 
-	default:
-		panic(err)
+		default:
+			panic(err)
+		}
 	}
 
 	if o.Status != OrderStatusOpen && o.Status != OrderStatusPaid {
