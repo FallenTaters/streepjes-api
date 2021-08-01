@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/PotatoesFall/bbucket"
 	"github.com/PotatoesFall/streepjes/shared"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -111,5 +112,10 @@ func GetAll() ([]UserPayload, error) {
 }
 
 func Get(username string) (User, error) {
-	return get(username)
+	user, err := get(username)
+	if err == bbucket.ErrObjectNotFound {
+		return user, ErrUserNotFound
+	}
+
+	return user, err
 }

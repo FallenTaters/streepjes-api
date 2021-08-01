@@ -1,7 +1,9 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -271,4 +273,32 @@ func getOrdersByMonth(c *router.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, orders)
+}
+
+func getOrdersByMonthCSV(c *router.Context) error {
+	year, errYear := strconv.Atoi(c.Param(`year`))
+	month, errMonth := strconv.Atoi(c.Param(`month`))
+	if errYear != nil || errMonth != nil {
+		return c.NoContent(http.StatusBadRequest)
+	}
+
+	date := time.Date(year, time.Month(month), 1, 0, 0, 0, 0, time.Local)
+	ordersByMonth, err := orders.Filter(orders.OrderFilter{
+		Month: &date,
+		Club:  null.NewInt(getUserFromContext(c).Club.Int()),
+	})
+	if err != nil {
+		panic(err)
+	}
+
+	data, err := orders.MakeCSV(ordersByMonth)
+	if err != nil {
+		panic(err)
+	}
+
+	filename := fmt.Sprintf(`orders-%s-%d.csv`, date.Month().String(), date.Year())
+
+	http.ServeContent(c.Response, c.Request, filename, time.Now(), bytes.NewReader(data))
+
+	return nil
 }

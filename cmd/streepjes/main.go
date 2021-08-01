@@ -52,6 +52,7 @@ func main() {
 	ad.POST(`/product/delete/:id`, postProductDelete)
 
 	ad.GET(`/orders/:year/:month`, getOrdersByMonth)
+	ad.GET(`/orders/:year/:month/csv`, getOrdersByMonthCSV)
 
 	panic(r.Start(`:` + settings.Port))
 }
