@@ -5,7 +5,7 @@ func GetAll() ([]Member, error) {
 }
 
 func Get(id int) (Member, error) {
-	repo.get(id)
+	return repo.get(id)
 }
 
 func Put(member Member) error {

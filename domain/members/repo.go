@@ -3,6 +3,7 @@ package members
 import (
 	"errors"
 
+	"github.com/PotatoesFall/bbucket"
 	"github.com/PotatoesFall/streepjes/shared/buckets"
 )
 
@@ -31,7 +32,12 @@ func (defaultRepo) getAll() ([]Member, error) {
 
 func (defaultRepo) get(id int) (Member, error) {
 	var member Member
-	return member, buckets.Members.Get(buckets.Itob(id), &member)
+	err := buckets.Members.Get(buckets.Itob(id), &member)
+	if err == bbucket.ErrObjectNotFound {
+		return Member{}, ErrMemberNotFound
+	}
+
+	return member, err
 }
 
 func (defaultRepo) updateMember(member Member) error {

@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"runtime/debug"
 
 	"git.fuyu.moe/Fuyu/router"
 	"github.com/PotatoesFall/streepjes/domain/users"
@@ -58,7 +59,8 @@ func main() {
 }
 
 func errorHandler(c *router.Context, v interface{}) {
-	fmt.Fprintf(os.Stderr, "panic: %#v\n", v)
+	fmt.Fprintf(os.Stderr, "panic: %s\n", v)
+	fmt.Fprintln(os.Stderr, string(debug.Stack()))
 	_ = c.NoContent(http.StatusInternalServerError)
 }
 

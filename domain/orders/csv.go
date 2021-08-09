@@ -1,14 +1,22 @@
 package orders
 
 import (
-	"fmt"
+	"bytes"
+	"encoding/csv"
+	"strconv"
 
 	"github.com/PotatoesFall/streepjes/domain/members"
 	"github.com/PotatoesFall/streepjes/domain/users"
 )
 
 func MakeCSV(orders []Order) ([]byte, error) {
-	data := "order id, club, bartender, bartender name, member id, member name, contents, price, time, status, last updated\n"
+	csvFile := new(bytes.Buffer)
+	w := csv.NewWriter(csvFile)
+
+	err := w.Write([]string{"order id", "club", "bartender", "bartender name", "member id", "member name", "price", "date", "time", "status", "last updated", "contents"})
+	if err != nil {
+		panic(err)
+	}
 
 	for _, order := range orders {
 		bartender, err := users.Get(order.Bartender)
@@ -21,17 +29,42 @@ func MakeCSV(orders []Order) ([]byte, error) {
 
 		member, err := members.Get(order.MemberID)
 		if err == members.ErrMemberNotFound {
-			bartender.Name = "unknown"
-		}
-		if err != nil {
+			member.Name = "unknown"
+		} else if err != nil {
 			panic(err)
 		}
 
-		orderTime := order.OrderTime.Format(`2006-01-02`)
+		orderDate := order.OrderTime.Format(`2006-01-02`)
+		orderTime := order.OrderTime.Format(`15:04`)
 		statusTime := order.StatusTime.Format(`2006-01-02`)
 
-		data += fmt.Sprintf("%d, %s, %s, %s, %d, %s %s, %d, %s, %s, %s\n", order.ID, order.Club, order.Bartender, bartender.Name, order.MemberID, member.Name, order.Contents, order.Price, orderTime, order.Status, statusTime)
+		err = w.Write([]string{
+			omitempty(order.ID),
+			order.Club.String(),
+			order.Bartender,
+			bartender.Name,
+			omitempty(order.MemberID),
+			member.Name,
+			strconv.Itoa(order.Price),
+			orderDate,
+			orderTime,
+			order.Status.String(),
+			statusTime,
+			order.Contents,
+		})
+		if err != nil {
+			panic(err)
+		}
 	}
 
-	return []byte(data), nil
+	w.Flush()
+	return csvFile.Bytes(), nil
+}
+
+func omitempty(i int) string {
+	if i == 0 {
+		return ``
+	}
+
+	return strconv.Itoa(i)
 }
