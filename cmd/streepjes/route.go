@@ -19,6 +19,44 @@ import (
 	"github.com/PotatoesFall/streepjes/shared/null"
 )
 
+func startServer() {
+	r := router.New()
+
+	r.Use(corsMiddleware)
+	r.ErrorHandler = errorHandler
+	r.Reader = reader
+
+	r.POST(`/login`, postLogin)
+
+	au := r.Group(`/`, authMiddleware)
+	au.POST(`/logout`, postLogout)
+	au.POST(`/active`, postActive)
+	au.GET(`/catalog`, getCatalog)
+	au.GET(`/members`, getMembers)
+	au.POST(`/order`, postOrder)
+	au.GET(`/orders`, getOrders)
+	au.POST(`/order/delete/:id`, postOrderDelete)
+	au.GET(`/club`, getClub)
+
+	ad := au.Group(`/`, roleMiddleware(users.RoleAdmin))
+	ad.GET(`/users`, getUsers)
+	ad.POST(`/user`, postUser)
+	ad.POST(`/user/delete/:username`, postUserDelete)
+
+	ad.POST(`/member`, postMember)
+	ad.POST(`/member/delete/:id`, postMemberDelete)
+
+	ad.POST(`/category`, postCategory)
+	ad.POST(`/category/delete/:id`, postCategoryDelete)
+	ad.POST(`/product`, postProduct)
+	ad.POST(`/product/delete/:id`, postProductDelete)
+
+	ad.GET(`/orders/:year/:month`, getOrdersByMonth)
+	ad.GET(`/orders/:year/:month/csv`, getOrdersByMonthCSV)
+
+	panic(r.Start(`:` + settings.Port))
+}
+
 func postActive(c *router.Context) error {
 	return c.NoContent(http.StatusOK)
 }

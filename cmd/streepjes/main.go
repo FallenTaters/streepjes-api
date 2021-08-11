@@ -21,41 +21,9 @@ func main() {
 	close := buckets.Init()
 	defer close() //nolint: errcheck
 
-	r := router.New()
+	startupChecks()
 
-	r.Use(corsMiddleware)
-	r.ErrorHandler = errorHandler
-	r.Reader = reader
-
-	r.POST(`/login`, postLogin)
-
-	au := r.Group(`/`, authMiddleware)
-	au.POST(`/logout`, postLogout)
-	au.POST(`/active`, postActive)
-	au.GET(`/catalog`, getCatalog)
-	au.GET(`/members`, getMembers)
-	au.POST(`/order`, postOrder)
-	au.GET(`/orders`, getOrders)
-	au.POST(`/order/delete/:id`, postOrderDelete)
-	au.GET(`/club`, getClub)
-
-	ad := au.Group(`/`, roleMiddleware(users.RoleAdmin))
-	ad.GET(`/users`, getUsers)
-	ad.POST(`/user`, postUser)
-	ad.POST(`/user/delete/:username`, postUserDelete)
-
-	ad.POST(`/member`, postMember)
-	ad.POST(`/member/delete/:id`, postMemberDelete)
-
-	ad.POST(`/category`, postCategory)
-	ad.POST(`/category/delete/:id`, postCategoryDelete)
-	ad.POST(`/product`, postProduct)
-	ad.POST(`/product/delete/:id`, postProductDelete)
-
-	ad.GET(`/orders/:year/:month`, getOrdersByMonth)
-	ad.GET(`/orders/:year/:month/csv`, getOrdersByMonthCSV)
-
-	panic(r.Start(`:` + settings.Port))
+	startServer()
 }
 
 func errorHandler(c *router.Context, v interface{}) {
@@ -77,4 +45,35 @@ func reader(c *router.Context, dst interface{}) (bool, error) {
 	}
 
 	return true, nil
+}
+
+func startupChecks() {
+	u, err := users.GetAll()
+	if err != nil {
+		panic(err)
+	}
+
+	if len(u) == 0 {
+		err = users.Put(users.User{
+			Username: `adminGladiators`,
+			Club:     shared.ClubGladiators,
+			Name:     `Gladiators Admin`,
+			Role:     users.RoleAdmin,
+			Password: []byte(`playlacrossebecauseitsfun`),
+		})
+		if err != nil {
+			panic(err)
+		}
+
+		err = users.Put(users.User{
+			Username: `adminParabool`,
+			Club:     shared.ClubParabool,
+			Name:     `Parabool Admin`,
+			Role:     users.RoleAdmin,
+			Password: []byte(`groningerstudentenkorfbalcommissie`),
+		})
+		if err != nil {
+			panic(err)
+		}
+	}
 }
