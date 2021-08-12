@@ -3,7 +3,6 @@ package members
 import (
 	"errors"
 
-	"github.com/PotatoesFall/bbucket"
 	"github.com/PotatoesFall/streepjes/shared"
 )
 
@@ -21,7 +20,7 @@ func validateMember(member Member) error {
 		if (original.Name != member.Name || original.Club != member.Club) && memberClubExists(member) {
 			return ErrNameTaken
 		}
-	case bbucket.ErrObjectNotFound:
+	case ErrMemberNotFound:
 		if member.ID != 0 {
 			return ErrMemberNotFound
 		}
