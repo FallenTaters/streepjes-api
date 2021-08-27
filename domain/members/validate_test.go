@@ -4,8 +4,8 @@ import (
 	"testing"
 
 	"git.fuyu.moe/Fuyu/assert"
-	"github.com/PotatoesFall/bbucket"
-	"github.com/PotatoesFall/streepjes/shared"
+	"github.com/FallenTaters/bbucket"
+	"github.com/FallenTaters/streepjes-api/shared"
 )
 
 func prepareRepoMock() {

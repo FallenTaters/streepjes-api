@@ -3,9 +3,9 @@ package orders
 import (
 	"time"
 
-	"github.com/PotatoesFall/streepjes/shared"
-	"github.com/PotatoesFall/streepjes/shared/buckets"
-	"github.com/PotatoesFall/streepjes/shared/null"
+	"github.com/FallenTaters/streepjes-api/shared"
+	"github.com/FallenTaters/streepjes-api/shared/buckets"
+	"github.com/FallenTaters/streepjes-api/shared/null"
 )
 
 type OrderStatus int

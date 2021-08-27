@@ -9,14 +9,14 @@ import (
 	"time"
 
 	"git.fuyu.moe/Fuyu/router"
-	"github.com/PotatoesFall/bbucket"
-	"github.com/PotatoesFall/streepjes/domain/catalog"
-	"github.com/PotatoesFall/streepjes/domain/members"
-	"github.com/PotatoesFall/streepjes/domain/orders"
-	"github.com/PotatoesFall/streepjes/domain/streepjes"
-	"github.com/PotatoesFall/streepjes/domain/users"
-	"github.com/PotatoesFall/streepjes/shared"
-	"github.com/PotatoesFall/streepjes/shared/null"
+	"github.com/FallenTaters/bbucket"
+	"github.com/FallenTaters/streepjes-api/domain/catalog"
+	"github.com/FallenTaters/streepjes-api/domain/members"
+	"github.com/FallenTaters/streepjes-api/domain/orders"
+	"github.com/FallenTaters/streepjes-api/domain/streepjes"
+	"github.com/FallenTaters/streepjes-api/domain/users"
+	"github.com/FallenTaters/streepjes-api/shared"
+	"github.com/FallenTaters/streepjes-api/shared/null"
 )
 
 func startServer() {

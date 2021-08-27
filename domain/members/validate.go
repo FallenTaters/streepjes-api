@@ -3,7 +3,7 @@ package members
 import (
 	"errors"
 
-	"github.com/PotatoesFall/streepjes/shared"
+	"github.com/FallenTaters/streepjes-api/shared"
 )
 
 var (

@@ -1,8 +1,8 @@
 package members
 
 import (
-	"github.com/PotatoesFall/streepjes/shared"
-	"github.com/PotatoesFall/streepjes/shared/buckets"
+	"github.com/FallenTaters/streepjes-api/shared"
+	"github.com/FallenTaters/streepjes-api/shared/buckets"
 )
 
 type Member struct {

@@ -1,11 +1,11 @@
 package main
 
 import (
-	"github.com/PotatoesFall/streepjes/domain/catalog"
-	"github.com/PotatoesFall/streepjes/domain/members"
-	"github.com/PotatoesFall/streepjes/domain/users"
-	"github.com/PotatoesFall/streepjes/shared"
-	"github.com/PotatoesFall/streepjes/shared/buckets"
+	"github.com/FallenTaters/streepjes-api/domain/catalog"
+	"github.com/FallenTaters/streepjes-api/domain/members"
+	"github.com/FallenTaters/streepjes-api/domain/users"
+	"github.com/FallenTaters/streepjes-api/shared"
+	"github.com/FallenTaters/streepjes-api/shared/buckets"
 )
 
 var testUsers = []users.User{

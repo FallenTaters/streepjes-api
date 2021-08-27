@@ -3,8 +3,8 @@ package members
 import (
 	"errors"
 
-	"github.com/PotatoesFall/bbucket"
-	"github.com/PotatoesFall/streepjes/shared/buckets"
+	"github.com/FallenTaters/bbucket"
+	"github.com/FallenTaters/streepjes-api/shared/buckets"
 )
 
 var repo memberRepo = defaultRepo{}

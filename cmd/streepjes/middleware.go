@@ -5,8 +5,8 @@ import (
 	"net/http"
 
 	"git.fuyu.moe/Fuyu/router"
-	"github.com/PotatoesFall/streepjes/domain/users"
-	"github.com/PotatoesFall/streepjes/shared"
+	"github.com/FallenTaters/streepjes-api/domain/users"
+	"github.com/FallenTaters/streepjes-api/shared"
 )
 
 const (

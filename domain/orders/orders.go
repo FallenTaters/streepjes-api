@@ -4,9 +4,9 @@ import (
 	"errors"
 	"time"
 
-	"github.com/PotatoesFall/bbucket"
-	"github.com/PotatoesFall/streepjes/domain/users"
-	"github.com/PotatoesFall/streepjes/shared/null"
+	"github.com/FallenTaters/bbucket"
+	"github.com/FallenTaters/streepjes-api/domain/users"
+	"github.com/FallenTaters/streepjes-api/shared/null"
 )
 
 var (

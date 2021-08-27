@@ -3,8 +3,8 @@ package main
 import (
 	"encoding/json"
 
-	"github.com/PotatoesFall/streepjes/domain/users"
-	"github.com/PotatoesFall/streepjes/shared/buckets"
+	"github.com/FallenTaters/streepjes-api/domain/users"
+	"github.com/FallenTaters/streepjes-api/shared/buckets"
 	"go.etcd.io/bbolt"
 )
 

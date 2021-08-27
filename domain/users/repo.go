@@ -1,7 +1,7 @@
 package users
 
 import (
-	"github.com/PotatoesFall/streepjes/shared/buckets"
+	"github.com/FallenTaters/streepjes-api/shared/buckets"
 	"golang.org/x/crypto/bcrypt"
 )
 

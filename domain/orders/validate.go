@@ -3,9 +3,9 @@ package orders
 import (
 	"errors"
 
-	"github.com/PotatoesFall/streepjes/domain/members"
-	"github.com/PotatoesFall/streepjes/domain/users"
-	"github.com/PotatoesFall/streepjes/shared"
+	"github.com/FallenTaters/streepjes-api/domain/members"
+	"github.com/FallenTaters/streepjes-api/domain/users"
+	"github.com/FallenTaters/streepjes-api/shared"
 )
 
 var (

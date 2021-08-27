@@ -3,7 +3,7 @@ package catalog
 import (
 	"errors"
 
-	"github.com/PotatoesFall/bbucket"
+	"github.com/FallenTaters/bbucket"
 )
 
 var (

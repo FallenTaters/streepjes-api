@@ -1,7 +1,7 @@
 package catalog
 
 import (
-	"github.com/PotatoesFall/streepjes/shared/buckets"
+	"github.com/FallenTaters/streepjes-api/shared/buckets"
 )
 
 func getCatalog() (Catalog, error) {

@@ -3,7 +3,7 @@ package users
 import (
 	"time"
 
-	"github.com/PotatoesFall/streepjes/shared"
+	"github.com/FallenTaters/streepjes-api/shared"
 )
 
 type Credentials struct {

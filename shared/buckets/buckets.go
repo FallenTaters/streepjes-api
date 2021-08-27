@@ -4,7 +4,7 @@ import (
 	"encoding/binary"
 	"time"
 
-	"github.com/PotatoesFall/bbucket"
+	"github.com/FallenTaters/bbucket"
 	"go.etcd.io/bbolt"
 )
 

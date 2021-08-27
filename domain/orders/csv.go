@@ -5,8 +5,8 @@ import (
 	"encoding/csv"
 	"strconv"
 
-	"github.com/PotatoesFall/streepjes/domain/members"
-	"github.com/PotatoesFall/streepjes/domain/users"
+	"github.com/FallenTaters/streepjes-api/domain/members"
+	"github.com/FallenTaters/streepjes-api/domain/users"
 )
 
 func MakeCSV(orders []Order) ([]byte, error) {

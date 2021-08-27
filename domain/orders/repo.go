@@ -3,9 +3,9 @@ package orders
 import (
 	"time"
 
-	"github.com/PotatoesFall/bbucket"
-	"github.com/PotatoesFall/streepjes/domain/members"
-	"github.com/PotatoesFall/streepjes/shared/buckets"
+	"github.com/FallenTaters/bbucket"
+	"github.com/FallenTaters/streepjes-api/domain/members"
+	"github.com/FallenTaters/streepjes-api/shared/buckets"
 )
 
 func get(id int) (Order, error) {

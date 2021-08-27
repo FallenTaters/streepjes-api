@@ -1,6 +1,6 @@
 package catalog
 
-import "github.com/PotatoesFall/streepjes/shared/buckets"
+import "github.com/FallenTaters/streepjes-api/shared/buckets"
 
 type Catalog struct {
 	Categories []Category `json:"categories"`

@@ -1,9 +1,9 @@
 package streepjes
 
 import (
-	"github.com/PotatoesFall/streepjes/domain/members"
-	"github.com/PotatoesFall/streepjes/domain/orders"
-	"github.com/PotatoesFall/streepjes/domain/users"
+	"github.com/FallenTaters/streepjes-api/domain/members"
+	"github.com/FallenTaters/streepjes-api/domain/orders"
+	"github.com/FallenTaters/streepjes-api/domain/users"
 )
 
 func DeleteMember(id int) error {

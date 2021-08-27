@@ -9,9 +9,9 @@ import (
 	"runtime/debug"
 
 	"git.fuyu.moe/Fuyu/router"
-	"github.com/PotatoesFall/streepjes/domain/users"
-	"github.com/PotatoesFall/streepjes/shared"
-	"github.com/PotatoesFall/streepjes/shared/buckets"
+	"github.com/FallenTaters/streepjes-api/domain/users"
+	"github.com/FallenTaters/streepjes-api/shared"
+	"github.com/FallenTaters/streepjes-api/shared/buckets"
 )
 
 func main() {

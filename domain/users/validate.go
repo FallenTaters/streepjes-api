@@ -3,8 +3,8 @@ package users
 import (
 	"errors"
 
-	"github.com/PotatoesFall/bbucket"
-	"github.com/PotatoesFall/streepjes/shared"
+	"github.com/FallenTaters/bbucket"
+	"github.com/FallenTaters/streepjes-api/shared"
 )
 
 var (
