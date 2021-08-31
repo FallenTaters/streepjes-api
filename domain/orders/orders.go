@@ -92,28 +92,10 @@ func HasPermissions(id int, user users.User) (bool, error) {
 	case users.RoleAdmin:
 		return true, nil
 	case users.RoleBartender:
-		editable := order.MemberID == 0 || (order.Status == OrderStatusOpen)
-		return order.Bartender == user.Username && editable, nil
+		return order.Bartender == user.Username && order.IsEditable(), nil
 	}
 
 	return false, users.ErrUserNotFound
-}
-
-func MemberHasUnpaidOrders(id int) bool {
-	orders, err := Filter(OrderFilter{
-		Member: null.NewInt(id),
-	})
-	if err != nil {
-		panic(err)
-	}
-
-	for _, o := range orders {
-		if o.Status == OrderStatusOpen {
-			return true
-		}
-	}
-
-	return false
 }
 
 func GetForUser(user users.User) ([]Order, error) {
@@ -131,21 +113,4 @@ func GetForUser(user users.User) ([]Order, error) {
 	}
 
 	return Filter(filter)
-}
-
-func UserHasOpenOrders(username string) bool {
-	orders, err := Filter(OrderFilter{
-		Bartender: null.NewString(username),
-	})
-	if err != nil {
-		panic(err)
-	}
-
-	for _, o := range orders {
-		if o.Status == OrderStatusOpen {
-			return true
-		}
-	}
-
-	return false
 }

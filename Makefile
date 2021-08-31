@@ -2,6 +2,7 @@ build:
 	go build -o ./bin/streepjes ./cmd/streepjes/
 
 generate:
+	find . -type f \( -name '*_enumer.go' \) -exec rm {} \;
 	go generate ./...
 
 resetdb:

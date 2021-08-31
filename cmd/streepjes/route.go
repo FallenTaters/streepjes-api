@@ -119,7 +119,7 @@ func postOrder(c *router.Context, order orders.Order) error {
 	case nil:
 		return c.NoContent(http.StatusOK)
 
-	case users.ErrUserNotFound, members.ErrMemberNotFound, orders.ErrStatusNotOpenOrPaid, orders.ErrUnknownClub, orders.ErrNoContents:
+	case users.ErrUserNotFound, members.ErrMemberNotFound, orders.ErrStatusNotBilledOrPaid, orders.ErrUnknownClub, orders.ErrNoContents:
 		return c.String(http.StatusBadRequest, err.Error())
 	}
 

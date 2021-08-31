@@ -9,10 +9,10 @@ import (
 )
 
 var (
-	ErrUnknownClub         = errors.New(`unkown club`)
-	ErrNoContents          = errors.New(`order has no content`)
-	ErrStatusNotOpenOrPaid = errors.New("order status must be open or paid")
-	ErrPriceTooLow         = errors.New("order price must be greater than 0")
+	ErrUnknownClub           = errors.New(`unkown club`)
+	ErrNoContents            = errors.New(`order has no content`)
+	ErrStatusNotBilledOrPaid = errors.New("order status must be billed or paid")
+	ErrPriceTooLow           = errors.New("order price must be greater than 0")
 )
 
 func validateAddOrder(o Order) error {
@@ -40,8 +40,8 @@ func validateAddOrder(o Order) error {
 		}
 	}
 
-	if o.Status != OrderStatusOpen && o.Status != OrderStatusPaid {
-		return ErrStatusNotOpenOrPaid
+	if o.Status != OrderTypeBilled && o.Status != OrderTypePaid {
+		return ErrStatusNotBilledOrPaid
 	}
 
 	if o.Club == shared.ClubUnknown {

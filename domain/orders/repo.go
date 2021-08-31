@@ -28,7 +28,7 @@ func filtered(filterFunc func(Order) bool) ([]Order, error) {
 func create(o Order) error {
 	o.ID = buckets.Orders.NextSequence()
 	o.OrderTime = time.Now().Local()
-	o.StatusTime = o.OrderTime
+	o.UpdatedAt = o.OrderTime
 
 	err := buckets.Orders.Create(o.Key(), o)
 	if err != nil || o.MemberID == 0 {
@@ -51,12 +51,12 @@ func deleteByID(id int) error {
 		order := *ptr.(*Order)
 		o = order
 
-		order.Status = OrderStatusCancelled
-		order.StatusTime = time.Now()
+		order.Status = OrderTypeCancelled
+		order.UpdatedAt = time.Now()
 
 		return order, nil
 	})
-	if err != nil || o.MemberID == 0 || o.Status != OrderStatusOpen {
+	if err != nil || o.MemberID == 0 {
 		return err
 	}
 
