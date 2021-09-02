@@ -282,7 +282,7 @@ func postUserDelete(c *router.Context) error {
 		return c.String(http.StatusBadRequest, users.ErrCannotChangeOwnAccount.Error())
 	}
 
-	err := streepjes.DeleteUser(username)
+	err := users.Delete(username)
 	switch err {
 	case nil:
 		return c.StatusText(http.StatusOK)

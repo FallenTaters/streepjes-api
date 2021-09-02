@@ -4,7 +4,6 @@ import (
 	"testing"
 
 	"git.fuyu.moe/Fuyu/assert"
-	"github.com/FallenTaters/bbucket"
 	"github.com/FallenTaters/streepjes-api/shared"
 )
 
@@ -31,7 +30,7 @@ func prepareRepoMock() {
 			return member2, nil
 		}
 
-		return Member{}, bbucket.ErrObjectNotFound
+		return Member{}, ErrMemberNotFound
 	}
 
 	tr._getAll = func() ([]Member, error) {
