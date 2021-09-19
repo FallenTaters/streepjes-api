@@ -336,6 +336,7 @@ func getOrdersByMonthCSV(c *router.Context) error {
 
 	filename := fmt.Sprintf(`orders-%s-%d.csv`, date.Month().String(), date.Year())
 
+	c.Response.Header().Set(`Content-Disposition`, `attachment; filename=`+filename)
 	http.ServeContent(c.Response, c.Request, filename, time.Now(), bytes.NewReader(data))
 
 	return nil
