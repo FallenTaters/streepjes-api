@@ -1,6 +1,6 @@
-package catalog
+package model
 
-import "github.com/FallenTaters/streepjes-api/shared/buckets"
+import "github.com/FallenTaters/streepjes-api/shared"
 
 type Catalog struct {
 	Categories []Category `json:"categories"`
@@ -13,7 +13,7 @@ type Category struct {
 }
 
 func (c Category) Key() []byte {
-	return buckets.Itob(c.ID)
+	return shared.Itob(c.ID)
 }
 
 type Product struct {
@@ -25,5 +25,5 @@ type Product struct {
 }
 
 func (p Product) Key() []byte {
-	return buckets.Itob(p.ID)
+	return shared.Itob(p.ID)
 }

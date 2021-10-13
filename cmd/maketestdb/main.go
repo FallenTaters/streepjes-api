@@ -4,13 +4,13 @@ import (
 	"encoding/json"
 
 	"github.com/FallenTaters/streepjes-api/domain/users"
-	"github.com/FallenTaters/streepjes-api/shared/buckets"
+	"github.com/FallenTaters/streepjes-api/repo/buckets"
 	"go.etcd.io/bbolt"
 )
 
 func main() {
 	close := buckets.Init()
-	defer close() //nolint: errcheck
+	defer close()
 
 	deleteData()
 	insertUsers()

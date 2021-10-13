@@ -4,7 +4,8 @@ import (
 	"errors"
 
 	"github.com/FallenTaters/bbucket"
-	"github.com/FallenTaters/streepjes-api/shared/buckets"
+	"github.com/FallenTaters/streepjes-api/repo/buckets"
+	"github.com/FallenTaters/streepjes-api/shared"
 )
 
 var repo memberRepo = defaultRepo{}
@@ -32,7 +33,7 @@ func (defaultRepo) getAll() ([]Member, error) {
 
 func (defaultRepo) get(id int) (Member, error) {
 	var member Member
-	err := buckets.Members.Get(buckets.Itob(id), &member)
+	err := buckets.Members.Get(shared.Itob(id), &member)
 	if err == bbucket.ErrObjectNotFound {
 		return Member{}, ErrMemberNotFound
 	}
@@ -58,5 +59,5 @@ func (defaultRepo) addMember(member Member) error {
 }
 
 func (defaultRepo) deleteMember(id int) error {
-	return buckets.Members.Delete(buckets.Itob(id))
+	return buckets.Members.Delete(shared.Itob(id))
 }

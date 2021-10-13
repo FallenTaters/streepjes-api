@@ -2,7 +2,6 @@ package members
 
 import (
 	"github.com/FallenTaters/streepjes-api/shared"
-	"github.com/FallenTaters/streepjes-api/shared/buckets"
 )
 
 type Member struct {
@@ -13,5 +12,5 @@ type Member struct {
 }
 
 func (m Member) Key() []byte {
-	return buckets.Itob(m.ID)
+	return shared.Itob(m.ID)
 }

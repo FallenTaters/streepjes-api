@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	"github.com/FallenTaters/bbucket"
+	"github.com/FallenTaters/streepjes-api/model"
 )
 
 var (
@@ -15,8 +16,8 @@ var (
 	ErrProductNotFound    = errors.New("product not found")
 )
 
-func validateProduct(product Product) error {
-	original, err := getProduct(product.ID)
+func validateProduct(product model.Product) error {
+	original, err := productRepo.Get(product.ID)
 	switch err {
 	case nil:
 		if original.Name != product.Name && productNameExists(product.Name) {
@@ -47,7 +48,7 @@ func validateProduct(product Product) error {
 }
 
 func productNameExists(name string) bool {
-	products, err := getProducts()
+	products, err := productRepo.GetAll()
 	if err != nil {
 		panic(err)
 	}
@@ -62,7 +63,7 @@ func productNameExists(name string) bool {
 }
 
 func categoryExists(id int) bool {
-	categories, err := getCategories()
+	categories, err := categoryRepo.GetAll()
 	if err != nil {
 		panic(err)
 	}
@@ -76,8 +77,8 @@ func categoryExists(id int) bool {
 	return false
 }
 
-func validateCategory(category Category) error {
-	original, err := getCategory(category.ID)
+func validateCategory(category model.Category) error {
+	original, err := categoryRepo.Get(category.ID)
 	switch err {
 	case nil:
 		if original.Name != category.Name && categoryNameExists(category.Name) {
@@ -102,7 +103,7 @@ func validateCategory(category Category) error {
 }
 
 func categoryNameExists(name string) bool {
-	categories, err := getCategories()
+	categories, err := categoryRepo.GetAll()
 	if err != nil {
 		panic(err)
 	}
@@ -117,7 +118,7 @@ func categoryNameExists(name string) bool {
 }
 
 func validateDeleteCategory(id int) error {
-	products, err := getProducts()
+	products, err := productRepo.GetAll()
 	if err != nil {
 		panic(err)
 	}

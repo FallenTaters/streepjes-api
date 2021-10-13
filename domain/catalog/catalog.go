@@ -2,23 +2,26 @@ package catalog
 
 import (
 	"time"
-)
 
-const cacheTime = time.Minute
+	"github.com/FallenTaters/streepjes-api/model"
+	"github.com/FallenTaters/streepjes-api/repo"
+)
 
 var (
-	cacheValid  = false
-	lastCatalog struct {
-		Catalog
-		Time time.Time
-	}
+	productRepo  repo.ProductRepo
+	categoryRepo repo.CategoryRepo
 )
 
-func Get() (Catalog, error) {
+func Init(pr repo.ProductRepo, cr repo.CategoryRepo) {
+	productRepo = pr
+	categoryRepo = cr
+}
+
+func Get() (model.Catalog, error) {
 	if time.Since(lastCatalog.Time) > cacheTime || !cacheValid {
 		c, err := getCatalog()
 		if err != nil {
-			return Catalog{}, err
+			return model.Catalog{}, err
 		}
 		lastCatalog.Catalog = c
 		lastCatalog.Time = time.Now()
@@ -29,7 +32,7 @@ func Get() (Catalog, error) {
 	return lastCatalog.Catalog, nil
 }
 
-func PutProduct(product Product) error {
+func PutProduct(product model.Product) error {
 	if err := validateProduct(product); err != nil {
 		return err
 	}
@@ -37,17 +40,17 @@ func PutProduct(product Product) error {
 	cacheValid = false
 
 	if product.ID != 0 {
-		return updateProduct(product)
+		return productRepo.Update(product)
 	}
-	return addProduct(product)
+	return productRepo.Add(product)
 }
 
 func DeleteProduct(id int) error {
 	cacheValid = false
-	return deleteProduct(id)
+	return productRepo.Delete(id)
 }
 
-func PutCategory(category Category) error {
+func PutCategory(category model.Category) error {
 	if err := validateCategory(category); err != nil {
 		return err
 	}
@@ -55,9 +58,9 @@ func PutCategory(category Category) error {
 	cacheValid = false
 
 	if category.ID != 0 {
-		return updateCategory(category)
+		return categoryRepo.Update(category)
 	}
-	return addCategory(category)
+	return categoryRepo.Add(category)
 }
 
 func DeleteCategory(id int) error {
@@ -67,5 +70,5 @@ func DeleteCategory(id int) error {
 
 	cacheValid = false
 
-	return deleteCategory(id)
+	return categoryRepo.Delete(id)
 }

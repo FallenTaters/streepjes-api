@@ -1,4 +1,4 @@
-package shared
+package cookies
 
 import (
 	"encoding/base64"
@@ -15,7 +15,7 @@ func Init(disableSecure bool) {
 	settings.DisableSecure = disableSecure
 }
 
-func GetCookie(req *http.Request, name string) ([]byte, bool) {
+func Get(req *http.Request, name string) ([]byte, bool) {
 	cookie, err := req.Cookie(name)
 	if err != nil {
 		return []byte{}, false
@@ -29,7 +29,7 @@ func GetCookie(req *http.Request, name string) ([]byte, bool) {
 	return v, true
 }
 
-func SetCookie(w http.ResponseWriter, name string, value []byte, maxAgeInSeconds int) {
+func Set(w http.ResponseWriter, name string, value []byte, maxAgeInSeconds int) {
 	http.SetCookie(w, &http.Cookie{
 		Name:     name,
 		Value:    base64.RawStdEncoding.EncodeToString(value),
@@ -40,7 +40,7 @@ func SetCookie(w http.ResponseWriter, name string, value []byte, maxAgeInSeconds
 	})
 }
 
-func UnsetCookie(w http.ResponseWriter, name string) {
+func Unset(w http.ResponseWriter, name string) {
 	http.SetCookie(w, &http.Cookie{
 		Name:     name,
 		Value:    ``,

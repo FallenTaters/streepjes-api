@@ -1,4 +1,4 @@
-package streepjes
+package application
 
 import (
 	"github.com/FallenTaters/streepjes-api/domain/members"

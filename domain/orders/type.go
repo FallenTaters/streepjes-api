@@ -4,7 +4,6 @@ import (
 	"time"
 
 	"github.com/FallenTaters/streepjes-api/shared"
-	"github.com/FallenTaters/streepjes-api/shared/buckets"
 	"github.com/FallenTaters/streepjes-api/shared/null"
 )
 
@@ -32,7 +31,7 @@ type Order struct {
 }
 
 func (o Order) Key() []byte {
-	return buckets.Itob(o.ID)
+	return shared.Itob(o.ID)
 }
 
 type OrderFilter struct {

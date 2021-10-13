@@ -1,7 +1,6 @@
 package buckets
 
 import (
-	"encoding/binary"
 	"time"
 
 	"github.com/FallenTaters/bbucket"
@@ -12,7 +11,7 @@ const path = "streepjes.db"
 
 var DB *bbolt.DB
 
-func Init() func() error {
+func Init() func() {
 	database, err := bbolt.Open(path, 0666, &bbolt.Options{Timeout: 1 * time.Second})
 	if err != nil {
 		panic(err)
@@ -25,7 +24,7 @@ func Init() func() error {
 	Categories = bbucket.New(DB, categoriesBucketName)
 	Products = bbucket.New(DB, productsBucketName)
 
-	return DB.Close
+	return func() { _ = DB.Close() }
 }
 
 var (
@@ -41,9 +40,3 @@ var (
 	categoriesBucketName = []byte("categories")
 	productsBucketName   = []byte("products")
 )
-
-func Itob(v int) []byte {
-	b := make([]byte, 8)
-	binary.BigEndian.PutUint64(b, uint64(v))
-	return b
-}

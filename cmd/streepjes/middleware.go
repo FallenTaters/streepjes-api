@@ -6,7 +6,7 @@ import (
 
 	"git.fuyu.moe/Fuyu/router"
 	"github.com/FallenTaters/streepjes-api/domain/users"
-	"github.com/FallenTaters/streepjes-api/shared"
+	"github.com/FallenTaters/streepjes-api/shared/cookies"
 )
 
 const (
@@ -34,7 +34,7 @@ func roleMiddleware(role users.Role) router.Middleware {
 
 func authMiddleware(next router.Handle) router.Handle {
 	return func(c *router.Context) error {
-		cookieValue, ok := shared.GetCookie(c.Request, authCookieName)
+		cookieValue, ok := cookies.Get(c.Request, authCookieName)
 		if !ok {
 			return c.StatusText(http.StatusUnauthorized)
 		}
@@ -53,7 +53,7 @@ func authMiddleware(next router.Handle) router.Handle {
 		c.Set(`user`, user)
 
 		// refresh cookie duration
-		shared.SetCookie(c.Response, authCookieName, cookieValue, authCookieDuration)
+		cookies.Set(c.Response, authCookieName, cookieValue, authCookieDuration)
 		err = users.RefreshToken(users.User{Username: cookie.Username})
 		if err != nil {
 			panic(err)
@@ -64,7 +64,7 @@ func authMiddleware(next router.Handle) router.Handle {
 }
 
 func authFail(c *router.Context) error {
-	shared.UnsetCookie(c.Response, authCookieName)
+	cookies.Unset(c.Response, authCookieName)
 	return c.StatusText(http.StatusUnauthorized)
 }
 

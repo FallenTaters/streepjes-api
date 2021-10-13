@@ -5,7 +5,7 @@ import (
 
 	"github.com/FallenTaters/bbucket"
 	"github.com/FallenTaters/streepjes-api/domain/members"
-	"github.com/FallenTaters/streepjes-api/shared/buckets"
+	"github.com/FallenTaters/streepjes-api/repo/buckets"
 )
 
 func get(id int) (Order, error) {

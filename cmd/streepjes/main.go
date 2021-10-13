@@ -1,50 +1,33 @@
 package main
 
 import (
-	"encoding/json"
-	"fmt"
-	"io/ioutil"
-	"net/http"
-	"os"
-	"runtime/debug"
-
-	"git.fuyu.moe/Fuyu/router"
+	"github.com/FallenTaters/streepjes-api/domain/catalog"
 	"github.com/FallenTaters/streepjes-api/domain/users"
+	"github.com/FallenTaters/streepjes-api/repo"
+	"github.com/FallenTaters/streepjes-api/repo/buckets"
 	"github.com/FallenTaters/streepjes-api/shared"
-	"github.com/FallenTaters/streepjes-api/shared/buckets"
+	"github.com/FallenTaters/streepjes-api/shared/cookies"
 )
 
 func main() {
 	readSettings()
 
-	shared.Init(settings.DisableSecure)
-	close := buckets.Init()
-	defer close() //nolint: errcheck
+	close := initPackages()
+	defer close()
 
 	startupChecks()
 
-	startServer()
+	r := makeRouter()
+	panic(r.Start(`:` + settings.Port))
 }
 
-func errorHandler(c *router.Context, v interface{}) {
-	fmt.Fprintf(os.Stderr, "panic: %s\n", v)
-	fmt.Fprintln(os.Stderr, string(debug.Stack()))
-	_ = c.NoContent(http.StatusInternalServerError)
-}
+func initPackages() func() {
+	cookies.Init(settings.DisableSecure)
+	closeDB := buckets.Init()
 
-func reader(c *router.Context, dst interface{}) (bool, error) {
-	defer c.Request.Body.Close()
-	body, err := ioutil.ReadAll(c.Request.Body)
-	if err != nil {
-		return false, c.String(http.StatusBadRequest, err.Error())
-	}
+	catalog.Init(repo.NewProductRepo(), repo.NewCategoryRepo())
 
-	err = json.Unmarshal(body, dst)
-	if err != nil {
-		return false, c.String(http.StatusBadRequest, err.Error())
-	}
-
-	return true, nil
+	return closeDB
 }
 
 func startupChecks() {

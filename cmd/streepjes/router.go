@@ -4,22 +4,47 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
+	"os"
+	"runtime/debug"
 	"strconv"
 	"time"
 
 	"git.fuyu.moe/Fuyu/router"
 	"github.com/FallenTaters/bbucket"
+	"github.com/FallenTaters/streepjes-api/application"
 	"github.com/FallenTaters/streepjes-api/domain/catalog"
 	"github.com/FallenTaters/streepjes-api/domain/members"
 	"github.com/FallenTaters/streepjes-api/domain/orders"
-	"github.com/FallenTaters/streepjes-api/domain/streepjes"
 	"github.com/FallenTaters/streepjes-api/domain/users"
-	"github.com/FallenTaters/streepjes-api/shared"
+	"github.com/FallenTaters/streepjes-api/model"
+	"github.com/FallenTaters/streepjes-api/shared/cookies"
 	"github.com/FallenTaters/streepjes-api/shared/null"
 )
 
-func startServer() {
+func errorHandler(c *router.Context, v interface{}) {
+	fmt.Fprintf(os.Stderr, "panic: %s\n", v)
+	fmt.Fprintln(os.Stderr, string(debug.Stack()))
+	_ = c.NoContent(http.StatusInternalServerError)
+}
+
+func reader(c *router.Context, dst interface{}) (bool, error) {
+	defer c.Request.Body.Close()
+	body, err := ioutil.ReadAll(c.Request.Body)
+	if err != nil {
+		return false, c.String(http.StatusBadRequest, err.Error())
+	}
+
+	err = json.Unmarshal(body, dst)
+	if err != nil {
+		return false, c.String(http.StatusBadRequest, err.Error())
+	}
+
+	return true, nil
+}
+
+func makeRouter() *router.Router {
 	r := router.New()
 
 	r.Use(corsMiddleware)
@@ -54,7 +79,7 @@ func startServer() {
 	ad.GET(`/orders/:year/:month`, getOrdersByMonth)
 	ad.GET(`/orders/:year/:month/csv`, getOrdersByMonthCSV)
 
-	panic(r.Start(`:` + settings.Port))
+	return r
 }
 
 func postActive(c *router.Context) error {
@@ -79,13 +104,13 @@ func postLogin(c *router.Context, credentials users.Credentials) error {
 	if err != nil {
 		panic(err)
 	}
-	shared.SetCookie(c.Response, authCookieName, cookieValue, authCookieDuration)
+	cookies.Set(c.Response, authCookieName, cookieValue, authCookieDuration)
 
 	return c.JSON(http.StatusOK, user.Role)
 }
 
 func postLogout(c *router.Context) error {
-	shared.UnsetCookie(c.Response, authCookieName)
+	cookies.Unset(c.Response, authCookieName)
 
 	err := users.LogOut(getUserFromContext(c))
 	if err != nil {
@@ -166,7 +191,7 @@ func postOrderDelete(c *router.Context) error {
 	panic(err)
 }
 
-func postProduct(c *router.Context, product catalog.Product) error {
+func postProduct(c *router.Context, product model.Product) error {
 	err := catalog.PutProduct(product)
 	switch err {
 	case nil:
@@ -179,7 +204,7 @@ func postProduct(c *router.Context, product catalog.Product) error {
 	panic(err)
 }
 
-func postCategory(c *router.Context, category catalog.Category) error {
+func postCategory(c *router.Context, category model.Category) error {
 	err := catalog.PutCategory(category)
 	switch err {
 	case nil:
@@ -247,7 +272,7 @@ func postMemberDelete(c *router.Context) error {
 		return c.StatusText(http.StatusUnprocessableEntity)
 	}
 
-	err = streepjes.DeleteMember(id)
+	err = application.DeleteMember(id)
 	switch err {
 	case nil:
 		return c.StatusText(http.StatusOK)

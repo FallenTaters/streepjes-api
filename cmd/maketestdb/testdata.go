@@ -1,11 +1,10 @@
 package main
 
 import (
-	"github.com/FallenTaters/streepjes-api/domain/catalog"
 	"github.com/FallenTaters/streepjes-api/domain/members"
 	"github.com/FallenTaters/streepjes-api/domain/users"
+	"github.com/FallenTaters/streepjes-api/model"
 	"github.com/FallenTaters/streepjes-api/shared"
-	"github.com/FallenTaters/streepjes-api/shared/buckets"
 )
 
 var testUsers = []users.User{
@@ -34,28 +33,28 @@ var testData = []bucketData{
 		[]byte("members"),
 		[]keyValuePair{
 			{
-				buckets.Itob(1),
+				shared.Itob(1),
 				members.Member{
 					ID:   1,
 					Club: shared.ClubGladiators,
 					Name: "Gladiator1",
 				},
 			}, {
-				buckets.Itob(2),
+				shared.Itob(2),
 				members.Member{
 					ID:   2,
 					Club: shared.ClubGladiators,
 					Name: "Gladiator2",
 				},
 			}, {
-				buckets.Itob(3),
+				shared.Itob(3),
 				members.Member{
 					ID:   3,
 					Club: shared.ClubParabool,
 					Name: "Parabool1",
 				},
 			}, {
-				buckets.Itob(4),
+				shared.Itob(4),
 				members.Member{
 					ID:   4,
 					Club: shared.ClubParabool,
@@ -67,14 +66,14 @@ var testData = []bucketData{
 		[]byte("categories"),
 		[]keyValuePair{
 			{
-				buckets.Itob(1),
-				catalog.Category{
+				shared.Itob(1),
+				model.Category{
 					ID:   1,
 					Name: "Drinks",
 				},
 			}, {
-				buckets.Itob(2),
-				catalog.Category{
+				shared.Itob(2),
+				model.Category{
 					ID:   2,
 					Name: "Snacks",
 				},
@@ -84,8 +83,8 @@ var testData = []bucketData{
 		[]byte("products"),
 		[]keyValuePair{
 			{
-				buckets.Itob(1),
-				catalog.Product{
+				shared.Itob(1),
+				model.Product{
 					ID:              1,
 					CategoryID:      1,
 					Name:            "Beer",
@@ -93,8 +92,8 @@ var testData = []bucketData{
 					PriceGladiators: 150,
 				},
 			}, {
-				buckets.Itob(2),
-				catalog.Product{
+				shared.Itob(2),
+				model.Product{
 					ID:              2,
 					CategoryID:      1,
 					Name:            "Special Beer",
@@ -102,8 +101,8 @@ var testData = []bucketData{
 					PriceGladiators: 210,
 				},
 			}, {
-				buckets.Itob(3),
-				catalog.Product{
+				shared.Itob(3),
+				model.Product{
 					ID:              3,
 					CategoryID:      1,
 					Name:            "Wine",
@@ -111,8 +110,8 @@ var testData = []bucketData{
 					PriceGladiators: 170,
 				},
 			}, {
-				buckets.Itob(4),
-				catalog.Product{
+				shared.Itob(4),
+				model.Product{
 					ID:              4,
 					CategoryID:      2,
 					Name:            "Tosti Kaas",
@@ -120,8 +119,8 @@ var testData = []bucketData{
 					PriceGladiators: 120,
 				},
 			}, {
-				buckets.Itob(5),
-				catalog.Product{
+				shared.Itob(5),
+				model.Product{
 					ID:              5,
 					CategoryID:      2,
 					Name:            "Tosti Ham & Kaas",
@@ -129,8 +128,8 @@ var testData = []bucketData{
 					PriceGladiators: 140,
 				},
 			}, {
-				buckets.Itob(6),
-				catalog.Product{
+				shared.Itob(6),
+				model.Product{
 					ID:              6,
 					CategoryID:      2,
 					Name:            "Kaassoufflé",

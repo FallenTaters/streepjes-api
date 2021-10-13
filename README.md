@@ -14,20 +14,14 @@ optional
 
 ### Get Started - Production
 - configure environment (see below)
-- generate enumer files
-    - `make generate`
 - make a production build
     - `make build`
-- create streepjes.db **if it doesn't exist**
-    - `make resetdb`
 - run the binary
     - `./bin/streepjes`
 
 ### Get Started - Development
 - configure environment (see below)
-- generate enumer files
-    - `make generate`
-- create streepjes.db
+- create streepjes.db with testdata
     - `make resetdb`
 - `make run`
 
