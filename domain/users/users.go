@@ -12,7 +12,7 @@ import (
 
 const (
 	tokenLength = 32
-	loginTime   = 5 * time.Minute
+	loginTime   = 10 * time.Minute
 )
 
 var (
