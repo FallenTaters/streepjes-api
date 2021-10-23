@@ -2,16 +2,10 @@ package users
 
 import (
 	"github.com/FallenTaters/streepjes-api/shared/buckets"
-	"golang.org/x/crypto/bcrypt"
 )
 
 func create(user User) error {
-	hash, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
-	if err != nil {
-		return err
-	}
-
-	user.Password = hash
+	user.Password = hash(user.Password)
 
 	return buckets.Users.Create(user.Key(), user)
 }

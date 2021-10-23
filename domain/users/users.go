@@ -64,6 +64,21 @@ func ValidateToken(username, token string) (User, bool) {
 	return user, true
 }
 
+func ChangePassword(username string, password []byte) error {
+	err := update(username, func(user User) (User, error) {
+		user.Password = hash(password)
+		return user, nil
+	})
+	if err == bbucket.ErrObjectNotFound {
+		return ErrUserNotFound
+	}
+	if err != nil {
+		panic(err)
+	}
+
+	return nil
+}
+
 func Put(user User) error {
 	user, err := validatePutUser(user)
 	if err != nil {

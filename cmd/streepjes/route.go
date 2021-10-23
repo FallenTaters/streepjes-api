@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -31,12 +32,17 @@ func startServer() {
 	au := r.Group(`/`, authMiddleware)
 	au.POST(`/logout`, postLogout)
 	au.POST(`/active`, postActive)
+
+	au.GET(`/me`, getMe)
+	au.POST(`/me`, postMe)
+
 	au.GET(`/catalog`, getCatalog)
+
 	au.GET(`/members`, getMembers)
+
 	au.POST(`/order`, postOrder)
 	au.GET(`/orders`, getOrders)
 	au.POST(`/order/delete/:id`, postOrderDelete)
-	au.GET(`/club`, getClub)
 
 	ad := au.Group(`/`, roleMiddleware(users.RoleAdmin))
 	ad.GET(`/users`, getUsers)
@@ -61,8 +67,22 @@ func postActive(c *router.Context) error {
 	return c.NoContent(http.StatusOK)
 }
 
-func getClub(c *router.Context) error {
-	return c.JSON(http.StatusOK, getUserFromContext(c).Club)
+func getMe(c *router.Context) error {
+	return c.JSON(http.StatusOK, getUserFromContext(c).AsPayload())
+}
+
+func postMe(c *router.Context, user users.User) error {
+	// currently only supports password change
+	currentUser := getUserFromContext(c)
+	err := users.ChangePassword(currentUser.Username, user.Password)
+	if err == nil {
+		return c.StatusText(http.StatusOK)
+	}
+	if errors.Is(err, users.ErrUserNotFound) {
+		return c.StatusText(http.StatusNotFound)
+	}
+
+	panic(err)
 }
 
 func postLogin(c *router.Context, credentials users.Credentials) error {
