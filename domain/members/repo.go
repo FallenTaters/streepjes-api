@@ -47,7 +47,7 @@ func (defaultRepo) updateMember(member Member) error {
 			ID:   m.ID,
 			Club: member.Club,
 			Name: member.Name,
-			Debt: m.Debt,
+			Debt: member.Debt,
 		}, nil
 	})
 }

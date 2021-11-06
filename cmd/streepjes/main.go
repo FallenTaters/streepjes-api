@@ -9,6 +9,7 @@ import (
 	"runtime/debug"
 
 	"git.fuyu.moe/Fuyu/router"
+	"github.com/FallenTaters/streepjes-api/domain/streepjes"
 	"github.com/FallenTaters/streepjes-api/domain/users"
 	"github.com/FallenTaters/streepjes-api/shared"
 	"github.com/FallenTaters/streepjes-api/shared/buckets"
@@ -75,5 +76,10 @@ func startupChecks() {
 		if err != nil {
 			panic(err)
 		}
+	}
+
+	err = streepjes.RecalculateMemberDebt()
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
 	}
 }

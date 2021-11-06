@@ -133,6 +133,14 @@ func GetForUser(user users.User) ([]Order, error) {
 	return Filter(filter)
 }
 
+func GetByMemberID(id int) ([]Order, error) {
+	filter := OrderFilter{
+		Member: null.NewInt(id),
+	}
+
+	return Filter(filter)
+}
+
 func UserHasOpenOrders(username string) bool {
 	orders, err := Filter(OrderFilter{
 		Bartender: null.NewString(username),
