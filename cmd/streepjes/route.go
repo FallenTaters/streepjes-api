@@ -31,12 +31,16 @@ func startServer() {
 	au := r.Group(`/`, authMiddleware)
 	au.POST(`/logout`, postLogout)
 	au.POST(`/active`, postActive)
+	au.GET(`/me`, getMe)
+	au.POST(`/me/password`, postMePassword)
+	au.GET(`/me/club`, getMeClub)
+
 	au.GET(`/catalog`, getCatalog)
 	au.GET(`/members`, getMembers)
+
 	au.POST(`/order`, postOrder)
 	au.GET(`/orders`, getOrders)
 	au.POST(`/order/delete/:id`, postOrderDelete)
-	au.GET(`/club`, getClub)
 
 	ad := au.Group(`/`, roleMiddleware(users.RoleAdmin))
 	ad.GET(`/users`, getUsers)
@@ -61,7 +65,11 @@ func postActive(c *router.Context) error {
 	return c.NoContent(http.StatusOK)
 }
 
-func getClub(c *router.Context) error {
+func getMe(c *router.Context) error {
+	return c.JSON(http.StatusOK, getUserFromContext(c))
+}
+
+func getMeClub(c *router.Context) error { // deprecate this call asap, replaced by getMe
 	return c.JSON(http.StatusOK, getUserFromContext(c).Club)
 }
 
@@ -274,6 +282,18 @@ func postUser(c *router.Context, user users.User) error {
 	}
 
 	panic(err)
+}
+
+func postMePassword(c *router.Context, pass string) error {
+	u := getUserFromContext(c)
+
+	if pass == `` {
+		return c.String(http.StatusBadRequest, `cannot change password to nothing`)
+	}
+
+	_ = users.ChangePassword(u, pass)
+
+	return c.NoContent(http.StatusOK)
 }
 
 func postUserDelete(c *router.Context) error {

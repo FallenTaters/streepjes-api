@@ -79,6 +79,10 @@ func Put(user User) error {
 	return create(user)
 }
 
+func ChangePassword(user User, pass string) error {
+	user.Password = hash(pass)
+}
+
 func Delete(username string) error {
 	err := validateDeleteUser(username)
 	if err != nil {
